@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ConditionPredictor.Web\ConditionPredictor.Web.csproj" />
-    <ProjectReference Include="..\CTakesWrapper\CTakesWrapper.csproj" />
   </ItemGroup>
 
 
