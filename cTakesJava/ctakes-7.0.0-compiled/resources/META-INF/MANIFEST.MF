@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Implementation-Title: ctakes-dependency-parser models
+Implementation-Version: 5.0.0
+Specification-Vendor: The Apache Software Foundation
+Specification-Title: ctakes-dependency-parser models
+Build-Jdk-Spec: 1.8
+Created-By: Maven JAR Plugin 3.3.0
+Specification-Version: 5.0
+Implementation-Vendor: The Apache Software Foundation
+Implementation-Build-Date: 2023-12-24 17:22
+

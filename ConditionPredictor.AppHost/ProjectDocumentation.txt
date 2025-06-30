@@ -1,0 +1,62 @@
+LLM: Bio-Mistral-7B.
+Potential future improvement: OpenBioLLM-70b. Model size is 150GB so requires strong infra setup.
+
+Hosting Bio-Mistral-7B via vLLM, FastAPI, and Docker Compose.
+Had the option to use Ollama but it hasn't supported streaming during function calling in the past.
+
+Java 17 is required to run cTAKES 6.0. 
+Maven (https://maven.apache.org/download.cgi) is required to build the project. 
+Setup steps for Maven are documented here: https://stackoverflow.com/a/63884663.
+Download the Extension Pack for Java (https://code.visualstudio.com/docs/java/vscode:extension/vscjava.vscode-java-pack) VSCode extension for direct integration.
+You MUST download the Fast lookup dictionary and add it to the files to be able to build. At least, I was getting errors without it.
+If you get errors like "Could not delete file..." on mvn clean compile, try running only mvn compile to build/load everything and then running clean compile afterward.
+So far my best success has just been running "mvn clean compile" a bunch of times. This sucks lol.
+
+To verify cTAKES setup in IntelliJ:
+
+1. Confirm module dependencies
+Open Project Structure (Ctrl+Alt+Shift+S).
+
+Go to Modules -> ctakes-core (or your main module) -> Dependencies.
+
+Ensure ctakes-type-system appears as a Module Dependency with Compile scope.
+
+If missing, click + -> Module Dependency, select it, and apply changes.
+
+2. Check generated sources folder is recognized
+In the ctakes-type-system module, verify that the target/generated-sources/jcasgen folder is included:
+
+Under Project Structure -> Modules -> ctakes-type-system -> Sources, mark it as Generated Sources Root.
+
+This tells IntelliJ to place the compiled JCas types on the classpath.
+
+3. Inspect your Run Configuration
+For PiperRunnerGui.java:
+
+Open Run -> Edit Configurations…, select your Application config.
+
+Under Use classpath of module, choose the module containing PiperRunnerGui (likely ctakes-core).
+
+Check the box “Add dependencies with ‘provided’ scope to classpath” to include everything your code needs.
+
+.\runPiperFile.bat -i C:\ctakes-test\input -o C:\ctakes-test\output -p C:\Users\Halifex\Documents\ConditionPredictor\ctakes-7.0.0-compiled\resources\org\apache\ctakes\clinical\pipeline\DefaultFastPipeline.piper --key 30254dd6-f1b5-4cea-a2f5-b194105a8fc7
+
+NOTE:
+
+IF YOU GET:
+
+org.apache.uima.resource.ResourceInitializationException: Initialization of annotator class "org.apache.ctakes.dictionary.lookup2.ae.DefaultJCasTermAnnotator" failed.  (Descriptor: <unknown>)
+	at org.apache.uima.analysis_engine.impl.PrimitiveAnalysisEngine_impl.initializeAnalysisComponent(PrimitiveAnalysisEngine_impl.java:252)
+	...
+Caused by: org.apache.uima.resource.ResourceInitializationException
+	at org.apache.ctakes.dictionary.lookup2.ae.AbstractJCasTermAnnotator.initialize(AbstractJCasTermAnnotator.java:140)
+	...
+Caused by: java.io.FileNotFoundException: No stream available for org/apache/ctakes/dictionary/lookup/fast/sno_rx_16ab.xml
+	at org.apache.ctakes.core.resource.FileLocator.getAsStream(FileLocator.java:151)
+	at org.apache.ctakes.core.resource.FileLocator.getAsStream(FileLocator.java:131)
+	at org.apache.ctakes.dictionary.lookup2.ae.AbstractJCasTermAnnotator.initialize(AbstractJCasTermAnnotator.java:137)
+	...
+
+PASTE IN THE DICTIONARY INTO resources/org/apache/ctakes/dictionary/lookup/fast IN THE COMPILED FOLDER. TO DO: FIGURE OUT WHY THIS DOESN'T COMPILE WITH IT
+
+To run the cTAKES project + wrapper, run ./mvnw spring-boot:run in the wrapper's 'complete' directory.

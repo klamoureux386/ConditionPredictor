@@ -1,0 +1,7 @@
+// Thread Safe Clinical Pipeline with degree-of and location-of relations, events, times, temporal abd event-doc creation time relations.
+
+// Thread safe Clinical Pipeline with degree-of and location-of relations.
+load TsDefaultRelationPipeline
+
+// Thread safe events, times, event-event, event-time and event-doc creation time relations.
+load TsTemporalSubPipe

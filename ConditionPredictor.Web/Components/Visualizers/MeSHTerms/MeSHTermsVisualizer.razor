@@ -1,0 +1,339 @@
+﻿@page "/MeSHTermsVisualizer"
+
+@using System.Xml.Linq
+@inject IWebHostEnvironment Env
+
+<PageTitle>MeSH Viewer</PageTitle>
+
+<div class="p-4">
+    <h1 class="text-2xl font-bold mb-4">MeSH Descriptor Browser</h1>
+
+    @if (LoadingStage != LoadingStages.Done)
+    {
+        <p>Loading MeSH data: @LoadingStage.ToString()</p>
+    }
+    else if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <p class="text-red-600">Error: @ErrorMessage</p>
+    }
+    else
+    {
+        <h1> Descriptors </h1>
+
+        <ul class="my-4 space-y-2">
+            @foreach (var descriptor in Descriptors)
+            {
+                <li class="border p-2 rounded shadow">
+                    <MeSHDescriptorVisualizer Descriptor="@descriptor" />
+                </li>
+            }
+        </ul>
+
+        <hr />
+
+        <h1> Supplemental Concepts </h1>
+
+        <ul class="my-4 space-y-2">
+            @foreach (var concept in SupplementalConcepts)
+            {
+                <li class="border p-2 rounded shadow">
+                    <MeSHSupplementalConceptVisualizer Concept="@concept" />
+                </li>
+            }
+        </ul>
+
+        <hr />
+
+        <h1> Qualifiers </h1>
+
+        <ul class="my-4 space-y-2">
+            @foreach (var qualifier in Qualifiers)
+            {
+                <li class="border p-2 rounded shadow">
+                    <MeSHQualifierVisualizer Qualifier="@qualifier" />
+                </li>
+            }
+        </ul>
+
+        <hr />
+
+        <h1> Pharmacological Actions </h1>
+
+        <ul class="my-4 space-y-2">
+            @foreach (var action in PharmacologicalActions)
+            {
+                <li class="border p-2 rounded shadow">
+                    <MeSHPharmacologicalActionVisualizer Action="@action" />
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    private List<MeSHDescriptor> Descriptors = new();
+    private List<MeSHQualifier> Qualifiers = new();
+    private List<MeSHSupplementalConcept> SupplementalConcepts = new();
+    private List<MeSHPharmacologicalAction> PharmacologicalActions = new();
+    private LoadingStages LoadingStage { get; set; } = LoadingStages.Descriptors;
+    private string? ErrorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            LoadingStage = LoadingStages.Descriptors;
+            await PopulateDescriptors();
+            LoadingStage = LoadingStages.Supplementals;
+            StateHasChanged();
+            await PopulateSupplementals();
+            LoadingStage = LoadingStages.Qualifiers;
+            StateHasChanged();
+            await PopulateQualifiers();
+            LoadingStage = LoadingStages.PharmacologicalActions;
+            StateHasChanged();
+            await PopulatePharmacologicalActions();
+            LoadingStage = LoadingStages.Done;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+            LoadingStage = LoadingStages.Error;
+            StateHasChanged();
+        }
+    }
+
+    public async Task PopulateDescriptors()
+    {
+        var path = Path.Combine(Env.ContentRootPath, "wwwroot", "MeSHTerms", "desc2025.xml");
+        await using var xmlStream = File.OpenRead(path);
+        var xdoc = await XDocument.LoadAsync(xmlStream, LoadOptions.None, CancellationToken.None);
+
+        Descriptors = xdoc.Descendants("DescriptorRecord")
+            .Select(d => {
+                var desc = new MeSHDescriptor
+                {
+                    Ui = d.Element("DescriptorUI")?.Value ?? "",
+                    Name = d.Element("DescriptorName")?.Element("String")?.Value ?? "",
+                    Annotation = d.Element("Annotation")?.Value ?? "",
+                    HistoryNote = d.Element("HistoryNote")?.Value ?? "",
+                    OnlineNote = d.Element("OnlineNote")?.Value ?? "",
+                    DateCreated = ParseDate(d.Element("DateCreated")),
+                    DateRevised = ParseDate(d.Element("DateRevised")),
+                    DateEstablished = ParseDate(d.Element("DateEstablished")),
+                    TreeNumbers = d.Element("TreeNumberList")?
+                                    .Elements("TreeNumber")
+                                    .Select(n => n.Value)
+                                    .ToList() ?? new()
+                };
+
+                // Get ScopeNote from first Concept
+                desc.ScopeNote = d.Descendants("Concept")
+                                   .FirstOrDefault()?.Element("ScopeNote")?.Value ?? "";
+
+                // Parse allowable qualifiers
+                desc.AllowableQualifiers = d.Element("AllowableQualifiersList")?
+                    .Elements("AllowableQualifier")
+                    .Select(q => {
+                        var qr = q.Element("QualifierReferredTo");
+                        return new MeSHDescriptor.AllowedQualifier
+                        {
+                            Ui = qr?.Element("QualifierUI")?.Value ?? "",
+                            Name = qr?.Element("QualifierName")?.Element("String")?.Value ?? "",
+                            Abbreviation = q.Element("Abbreviation")?.Value ?? ""
+                        };
+                    }).ToList() ?? new();
+
+                return desc;
+            })
+            .Take(50) // Limit for performance
+            .ToList();
+    }
+
+    public async Task PopulateQualifiers()
+    {
+        var path = Path.Combine(Env.ContentRootPath, "wwwroot", "MeSHTerms", "qual2025.xml");
+        await using var xmlStream = File.OpenRead(path);
+        var xdoc = await XDocument.LoadAsync(xmlStream, LoadOptions.None, CancellationToken.None);
+        Qualifiers = xdoc.Descendants("QualifierRecord")
+            .Select(q => {
+                MeSHQualifier mq = new MeSHQualifier {
+                    Ui = q.Element("QualifierUI")?.Value ?? "",
+                    Name = q.Element("QualifierName")?.Element("String")?.Value ?? "",
+                    Annotation = q.Element("Annotation")?.Value ?? "",
+                    HistoryNote = q.Element("HistoryNote")?.Value ?? "",
+                    OnlineNote = q.Element("OnlineNote")?.Value ?? "",
+                    TreeNumbers = q.Element("TreeNumberList")
+                                    ?.Elements("TreeNumber")
+                                    .Select(n => n.Value)
+                                    .ToList() ?? new(),
+                    DateCreated = ParseDate(q.Element("DateCreated")),
+                    DateRevised = ParseDate(q.Element("DateRevised")),
+                    DateEstablished = ParseDate(q.Element("DateEstablished")),
+                };
+
+                // Pull abbreviation from first preferred Term under concepts:
+                mq.Abbreviation = q.Descendants("Term")
+                                   .FirstOrDefault(t => t.Attribute("ConceptPreferredTermYN")?.Value == "Y")
+                                   ?.Element("Abbreviation")?.Value ?? "";
+
+                return mq;
+            })
+            .Take(50)
+            .ToList();
+    }
+
+    public async Task PopulateSupplementals()
+    {
+        var path = Path.Combine(Env.ContentRootPath, "wwwroot", "MeSHTerms", "supp2025.xml");
+        await using var xmlStream = File.OpenRead(path);
+        var xdoc = await XDocument.LoadAsync(xmlStream, LoadOptions.None, CancellationToken.None);
+        SupplementalConcepts = xdoc.Descendants("SupplementalRecord")
+            .Select(s => new MeSHSupplementalConcept
+            {
+                Name = s.Element("SupplementalRecordName")?.Element("String")?.Value ?? "(Unknown)",
+                MappedDescriptors = s.Element("HeadingMappedToList")?.Elements("HeadingMappedTo")
+                    .Select(h => h.Element("DescriptorReferredTo")?.Element("DescriptorName")?.Element("String")?.Value ?? "")
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .ToList() ?? new()
+            })
+            .Take(50)
+            .ToList();
+    }
+
+    public async Task PopulatePharmacologicalActions()
+    {
+        var path = Path.Combine(Env.ContentRootPath, "wwwroot", "MeSHTerms", "pa2025.xml");
+        await using var xmlStream = File.OpenRead(path);
+        var xdoc = await XDocument.LoadAsync(xmlStream, LoadOptions.None, CancellationToken.None);
+        PharmacologicalActions = xdoc.Descendants("PharmacologicalAction")
+            .Select(pa =>
+            {
+                var descriptor = pa.Element("DescriptorReferredTo");
+                var name = descriptor?.Element("DescriptorName")?.Element("String")?.Value ?? "(Unknown)";
+                var ui = descriptor?.Element("DescriptorUI")?.Value ?? string.Empty;
+
+                var substances = pa.Element("PharmacologicalActionSubstanceList")?
+                    .Elements("Substance")
+                    .Select(sub => new MeSHPharmacologicalAction.PharmaSubstance
+                    {
+                        RecordUI = sub.Element("RecordUI")?.Value ?? string.Empty,
+                        RecordName = sub.Element("RecordName")?.Element("String")?.Value ?? string.Empty
+                    })
+                    .Where(s => !string.IsNullOrWhiteSpace(s.RecordName))
+                    .ToList() ?? new();
+
+                return new MeSHPharmacologicalAction
+                {
+                    DescriptorUI = ui,
+                    ActionName = name,
+                    Substances = substances
+                };
+            })
+            .ToList();
+    }
+
+    private DateTime? ParseDate(XElement? el) 
+    {
+        if (el == null) 
+            return null;
+        if (int.TryParse(el.Element("Year")?.Value, out int y) &&
+            int.TryParse(el.Element("Month")?.Value, out int m) &&
+            int.TryParse(el.Element("Day")?.Value, out int d))
+        {
+            return new DateTime(y, m, d);
+        }
+        return null;
+    }
+
+    public class MeSHDescriptor
+    {
+        public string Ui { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+
+        public DateTime? DateCreated { get; set; }
+        public DateTime? DateRevised { get; set; }
+        public DateTime? DateEstablished { get; set; }
+
+        public string Annotation { get; set; } = string.Empty;
+        public string ScopeNote { get; set; } = string.Empty;
+        public string HistoryNote { get; set; } = string.Empty;
+        public string OnlineNote { get; set; } = string.Empty;
+
+        public List<string> TreeNumbers { get; set; } = new(); 
+    
+        // List of allowed qualifiers and their abbreviations
+        public List<AllowedQualifier> AllowableQualifiers { get; set; } = new();
+
+        public class AllowedQualifier
+        {
+            public string Ui { get; set; } = string.Empty;
+            public string Name { get; set; } = string.Empty; 
+            public string Abbreviation { get; set; } = string.Empty;
+        }
+    }
+
+    public class MeSHQualifier
+    {
+        public string Ui { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;        
+        public DateTime? DateCreated { get; set; }              
+        public DateTime? DateRevised { get; set; }              
+        public DateTime? DateEstablished { get; set; }          
+        public string Annotation { get; set; } = string.Empty;  
+        public string HistoryNote { get; set; } = string.Empty; 
+        public string OnlineNote { get; set; } = string.Empty;  
+        public List<string> TreeNumbers { get; set; } = new();  
+        public string Abbreviation { get; set; } = string.Empty;
+    }
+
+    public class MeSHSupplementalConcept
+    {
+        public string Ui { get; set; } = string.Empty; // <SupplementalRecordUI>
+        public string Name { get; set; } = string.Empty; // <SupplementalRecordName><String>
+        public string Note { get; set; } = string.Empty; // <Note>
+        public DateTime? DateCreated { get; set; }
+        public DateTime? DateRevised { get; set; }
+
+        public List<string> PreviousIndexing { get; set; } = new(); // <PreviousIndexingList>
+        public List<string> MappedDescriptors { get; set; } = new(); // <HeadingMappedToList><DescriptorUI>
+        public List<string> PharmacologicalActions { get; set; } = new(); // <PharmacologicalActionList><DescriptorUI>
+        public List<string> RegistryNumbers { get; set; } = new(); // <RegistryNumberList>
+        public List<string> RelatedRegistryNumbers { get; set; } = new(); // <RelatedRegistryNumberList>
+        public List<SupplementalConceptRelation> ConceptRelations { get; set; } = new(); // from <ConceptRelationList>
+
+        public class SupplementalConceptRelation
+        {
+            public string RelationName { get; set; } = string.Empty; // <ConceptRelation RelationName="">
+            public string Concept1UI { get; set; } = string.Empty;
+            public string Concept2UI { get; set; } = string.Empty;
+        }
+    }
+
+
+    public class MeSHPharmacologicalAction
+    {
+        public string DescriptorUI { get; set; } = string.Empty; // <DescriptorUI>
+        public string ActionName { get; set; } = string.Empty;   // <DescriptorName><String>
+
+        public List<PharmaSubstance> Substances { get; set; } = new(); // <PharmacologicalActionSubstanceList>
+
+        public class PharmaSubstance
+        {
+            public string RecordUI { get; set; } = string.Empty;   // <RecordUI>
+            public string RecordName { get; set; } = string.Empty; // <RecordName><String>
+        }
+    }
+
+    public enum LoadingStages
+    {
+        Descriptors,
+        Qualifiers,
+        Supplementals,
+        PharmacologicalActions,
+        Done,
+        Error
+    }
+
+}

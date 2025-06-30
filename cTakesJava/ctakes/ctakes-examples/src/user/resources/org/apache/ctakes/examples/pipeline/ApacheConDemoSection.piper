@@ -1,0 +1,13 @@
+// Demo pipeline with a custom writer.
+
+// Annotate sections by known regex
+//add BsvRegexSectionizer
+add SimpleSegmentAnnotator
+
+//add ParagraphAnnotator
+
+//add SentenceDetector
+add SentenceDetectorAnnotatorBIO classifierJarPath=/org/apache/ctakes/core/models/sentdetect/model.jar
+
+// Save simple information
+add ApacheConSentenceWriter

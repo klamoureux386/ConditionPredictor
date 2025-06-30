@@ -1,0 +1,90 @@
+﻿@using static ConditionPredictor.Web.Components.Visualizers.MeSHTerms.MeSHTermsVisualizer
+
+<div class="text-xl font-semibold">@Descriptor.Name</div>
+<div class="text-sm text-gray-600">UI: <code>@Descriptor.Ui</code></div>
+
+@if (Descriptor.TreeNumbers?.Count > 0)
+{
+    <div class="text-sm text-gray-600">
+        Tree Numbers:
+        <ul class="list-disc list-inside text-gray-700">
+            @foreach (var tree in Descriptor.TreeNumbers)
+            {
+                <li>@tree</li>
+            }
+        </ul>
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Descriptor.Annotation))
+{
+    <div>
+        <div class="font-medium text-sm text-gray-700">Annotation:</div>
+        <div class="text-sm text-gray-800">@Descriptor.Annotation</div>
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Descriptor.ScopeNote))
+{
+    <div>
+        <div class="font-medium text-sm text-gray-700">Scope Note:</div>
+        <div class="text-sm text-gray-800">@Descriptor.ScopeNote</div>
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Descriptor.HistoryNote))
+{
+    <div>
+        <div class="font-medium text-sm text-gray-700">History Note:</div>
+        <div class="text-sm text-gray-800">@Descriptor.HistoryNote</div>
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Descriptor.OnlineNote))
+{
+    <div>
+        <div class="font-medium text-sm text-gray-700">Online Note:</div>
+        <div class="text-sm text-gray-800">@Descriptor.OnlineNote</div>
+    </div>
+}
+
+<div class="text-sm text-gray-600">
+    <div class="font-medium">Dates:</div>
+    <ul class="ml-4 list-disc list-inside text-gray-700">
+        @if (Descriptor.DateCreated.HasValue)
+        {
+            <li>Created: @Descriptor.DateCreated.Value.ToString("yyyy-MM-dd")</li>
+        }
+        @if (Descriptor.DateRevised.HasValue)
+        {
+            <li>Revised: @Descriptor.DateRevised.Value.ToString("yyyy-MM-dd")</li>
+        }
+        @if (Descriptor.DateEstablished.HasValue)
+        {
+            <li>Established: @Descriptor.DateEstablished.Value.ToString("yyyy-MM-dd")</li>
+        }
+    </ul>
+</div>
+
+@if (Descriptor.AllowableQualifiers?.Count > 0)
+{
+    <div class="mt-2">
+        <div class="font-medium text-sm text-gray-700">Allowable Qualifiers:</div>
+        <ul class="list-disc list-inside text-sm text-gray-800">
+            @foreach (var q in Descriptor.AllowableQualifiers)
+            {
+                <li>
+                    <span class="font-semibold">@q.Name</span>
+                    <span class="text-gray-500 text-xs ml-1">(@q.Abbreviation, @q.Ui)</span>
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+@code {
+
+    [Parameter, EditorRequired]
+    public MeSHDescriptor Descriptor { get; set; } = null!;
+
+}

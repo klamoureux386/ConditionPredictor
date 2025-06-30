@@ -1,0 +1,17 @@
+// Advanced Tokenization: Regex sectionization, BIO Sentence Detector(lumper), Paragraphs,Lists 
+load AdvancedTokenizerPipeline.piper
+add ContextDependentTokenizerAnnotator
+add POSTagger
+// Chunkers
+load ChunkerSubPipe.piper
+// Default fast dictionary lookup
+load DictionarySubPipe.piper
+add org.apache.ctakes.drugner.ae.DrugMentionAnnotator
+// Cleartk Entity Attributes
+load AttributeCleartkSubPipe.piper
+// Temporal
+load TemporalSubPipe.piper
+// Coreferences
+load CorefSubPipe.piper
+add ContextAnnotator
+add LabValueFinder

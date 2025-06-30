@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="bda80024-4e14-440c-aa3a-a69d6ef3e1db" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../Controllers/CTakesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../Controllers/CTakesController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-assertion-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-assertion-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-assertion-zoner-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-assertion-zoner-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-chunker-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-chunker-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-clinical-pipeline-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-clinical-pipeline-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-constituency-parser-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-constituency-parser-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-context-tokenizer-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-context-tokenizer-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-core-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-core-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-coreference-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-coreference-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-dependency-parser-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-dependency-parser-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-dictionary-lookup-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-dictionary-lookup-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-dictionary-lookup-fast-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-dictionary-lookup-fast-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-drug-ner-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-drug-ner-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-examples-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-examples-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-fhir-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-fhir-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-gui-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-gui-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-lvg-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-lvg-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-mastif-zoner-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-mastif-zoner-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-ne-contexts-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-ne-contexts-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-pbj-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-pbj-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-pos-tagger-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-pos-tagger-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-preprocessor-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-preprocessor-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-relation-extractor-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-relation-extractor-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-side-effect-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-side-effect-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-smoking-status-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-smoking-status-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-template-filler-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-template-filler-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-temporal-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-temporal-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-tiny-rest-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-tiny-rest-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-type-system-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-type-system-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-utils-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-utils-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-ytex-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-ytex-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/ctakes-ytex-uima-7.0.0-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/ctakes-ytex-uima-7.0.0-SNAPSHOT.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/org/apache/ctakes/clinical/pipeline/CustomFastPipeline.piper" beforeDir="false" afterPath="$PROJECT_DIR$/resources/org/apache/ctakes/clinical/pipeline/CustomFastPipeline.piper" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ctakes/ctakes-clinical-pipeline/src/user/resources/org/apache/ctakes/clinical/pipeline/CustomFastPipeline.piper" beforeDir="false" afterPath="$PROJECT_DIR$/../ctakes/ctakes-clinical-pipeline/src/user/resources/org/apache/ctakes/clinical/pipeline/CustomFastPipeline.piper" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../ConditionPredictor.Web/Services/CTAKESService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../../ConditionPredictor.Web/Services/CTAKESService.cs" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 5
+}]]></component>
+  <component name="ProjectId" id="2yi3qDkZPwmCb5JzdIvAXy7hGBI" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="bda80024-4e14-440c-aa3a-a69d6ef3e1db" name="Changes" comment="" />
+      <created>1750303754202</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1750303754202</updated>
+    </task>
+    <servers />
+  </component>
+</project>

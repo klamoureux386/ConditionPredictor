@@ -1,0 +1,8 @@
+// Thread-safe Pipeline with degree-of and location-of relations and coreference resolution.
+
+
+// Pipeline with degree-of and location-of relations
+load TsDefaultRelationPipeline
+
+// Coreference resolution
+load TsCorefSubPipe

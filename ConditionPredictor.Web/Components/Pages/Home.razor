@@ -1,0 +1,157 @@
+﻿@page "/"
+@using ConditionPredictor.Web.Models.CTakes
+@using ConditionPredictor.Web.Models.PubMed
+@using System.Text
+
+@inject NavigationManager _navigationManager;
+
+@inject CTakesService _ctakesService;
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<br />
+
+<button @onclick="NavigateToMeSHQuery"
+        type="button"
+        class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+    Query for MeSH Terms
+</button>
+
+<button @onclick="NavigateToMeSHTerms"
+        type="button"
+        class="rounded-md bg-purple-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+    Visualize 2025 MeSH Terms
+</button>
+
+<button @onclick="TestCTAKES"
+        type="button"
+        class="rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+    Test CTAKES
+</button>
+
+@if (annotated != null)
+{
+    <div class="mt-4">
+        @annotated
+    </div>
+}
+
+@code {
+
+    private CTakesResponse? cTakesResponse { get; set; }
+    private MarkupString? annotated { get; set; }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+    }
+
+    private void NavigateToMeSHTerms()
+    {
+        _navigationManager.NavigateTo("/MeSHTermsVisualizer");
+    }
+
+    private void NavigateToMeSHQuery()
+    {
+        _navigationManager.NavigateTo("/MeSHTermsQuery");
+    }
+
+    private async Task TestCTAKES()
+    {
+        var output = await _ctakesService.SubmitSampleToCTAKES();
+        cTakesResponse = output.response;
+
+        // Assuming 'view' is your InitialViewInfo object.
+        var marks = new List<CTakesAnnotationMark>();
+
+        // Helper to extract and add annotation marks from a given mention list
+        void AddMarks<T>(IEnumerable<T> mentions, string type, string cssClass) where T : class
+        {
+            if (mentions == null) return;
+            foreach (dynamic m in mentions)
+            {
+                var firstConcept = (m.OntologyConceptArr as List<CTakesResponse.UmlsConcept>)?.FirstOrDefault();
+                marks.Add(new CTakesAnnotationMark
+                {
+                    Begin = m.Begin,
+                    End = m.End,
+                    Type = type,
+                    PreferredText = firstConcept?.PreferredText,
+                    Tooltip = firstConcept?.Cui ?? "",
+                    CssClass = cssClass
+                });
+            }
+        }
+
+        // Now extract from each relevant view property
+        AddMarks(output.response.Views.InitialView.SignSymptomMentions, "SignSymptom", "symptom");
+        AddMarks(output.response.Views.InitialView.DiseaseDisorderMentions, "DiseaseDisorder", "disease");
+        AddMarks(output.response.Views.InitialView.ProcedureMentions, "Procedure", "procedure");
+        AddMarks(output.response.Views.InitialView.MedicationMentions, "Medication", "medication");
+        AddMarks(output.response.Views.InitialView.AnatomicalSiteMentions, "AnatomicalSite", "anatomical-site");
+
+        annotated = GenerateAnnotatedHtml(output.originalText, marks);
+        StateHasChanged();
+    }
+
+    public static MarkupString GenerateAnnotatedHtml(string originalText, List<CTakesAnnotationMark> marks)
+    {
+        // Sort by begin ASC, end DESC so that innermost annotations are inserted first
+        marks = marks.OrderBy(m => m.Begin).ThenByDescending(m => m.End).ToList();
+        var sb = new StringBuilder();
+        int pos = 0;
+
+        // Build a structure of marks for easy lookup
+        var events = new List<(int pos, bool isStart, CTakesAnnotationMark mark)>();
+        foreach (var m in marks)
+        {
+            events.Add((m.Begin, true, m));
+            events.Add((m.End, false, m));
+        }
+        events = events.OrderBy(e => e.pos)
+                       .ThenBy(e => !e.isStart) // End events before start events at the same pos
+                       .ToList();
+
+        var openMarks = new Stack<CTakesAnnotationMark>();
+        int idx = 0;
+
+        for (int i = 0; i <= originalText.Length; i++)
+        {
+            // Insert any marks opening or closing at this character
+            while (idx < events.Count && events[idx].pos == i)
+            {
+                if (!events[idx].isStart)
+                {
+                    // Close tag
+                    sb.Append("</span>");
+
+                    //Append any supplementary marks
+                    if (events[idx].mark.CssClass == "anatomical-site")
+                        sb.Append("<span class=\"ANT\"><sub>◉</sub></span>");
+                    if (events[idx].mark.CssClass == "symptom")
+                        sb.Append("<span class=\"FND\"><sub>•</sub></span>");
+
+                    openMarks.Pop();
+                }
+                else
+                {
+                    var m = events[idx].mark;
+                    var tooltip = !string.IsNullOrWhiteSpace(m.Tooltip) ? $" title=\"{m.Tooltip}\"" : "";
+                    sb.Append($"<span class=\"annotation {m.CssClass}\"{tooltip}>");
+                    openMarks.Push(m);
+                }
+                idx++;
+            }
+            if (i < originalText.Length)
+                sb.Append(System.Net.WebUtility.HtmlEncode(originalText[i].ToString()));
+        }
+        // Clean up any open tags (shouldn't be necessary if data is consistent)
+        while (openMarks.Count > 0) sb.Append("</span>");
+        return new MarkupString(sb.ToString());
+    }
+
+}

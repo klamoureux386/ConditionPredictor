@@ -1,0 +1,33 @@
+﻿@using static ConditionPredictor.Web.Components.Visualizers.MeSHTerms.MeSHTermsVisualizer
+
+<div class="font-semibold">@Action.ActionName</div>
+<div class="text-sm text-gray-600">
+    DescriptorUI: <code>@Action.DescriptorUI</code>
+</div>
+
+@if (Action.Substances?.Count > 0)
+{
+    <div class="text-sm text-gray-600 mt-1">
+        Substances:
+        <ul class="list-disc list-inside text-gray-700">
+            @foreach (var substance in Action.Substances)
+            {
+                <li>
+                    <span class="font-medium">@substance.RecordName</span>
+                    <span class="text-gray-500 text-xs ml-1">(@substance.RecordUI)</span>
+                </li>
+            }
+        </ul>
+    </div>
+}
+else
+{
+    <div class="text-sm text-gray-500 italic">No substances listed.</div>
+}
+
+@code {
+
+    [Parameter, EditorRequired]
+    public MeSHPharmacologicalAction Action { get; set; } = null!;
+
+}

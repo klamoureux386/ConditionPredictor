@@ -1,0 +1,56 @@
+﻿@page "/MeSHTermsQuery"
+
+@inject EvaluatorService _evaluatorService;
+@inject PubMedService _pubMedService;
+
+@using ConditionPredictor.Web.Models.PubMed
+
+<h3>MeSH Term Search</h3>
+
+@if (_articles != null)
+{
+    <h2>Results</h2>
+    <ul>
+        @foreach (var article in _articles.Values)
+        {
+            <li>
+                <PubMedArticleInfoVisualizer ArticleInfo="article" />
+            </li>
+
+            @if (_articleAbstracts.ContainsKey(article.Uid))
+            {
+                foreach (var articleAbstract in _articleAbstracts[article.Uid])
+                {
+                    <PubMedArticleVisualizer Article="articleAbstract" />
+                }
+            }
+            else
+            {
+                <button class="border-1 border-black" @onclick="() => GetAbstract(article.Uid)">
+                    Get Abstract
+                </button>
+            }
+        }
+    </ul>
+}
+
+@code {
+    private Dictionary<string, PubMedArticleInfo>? _articles = null;
+    private Dictionary<string, List<PubmedArticleSet.PubmedArticle>> _articleAbstracts = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _articles = await _evaluatorService.GetRelevantArticles("");
+            StateHasChanged();
+        }
+    }
+
+    private async Task GetAbstract(string articleId)
+    {
+        var articleSet = await _pubMedService.GetPubmedArticle(articleId);
+
+        _articleAbstracts.Add(articleId, articleSet!.Articles);
+    }
+}

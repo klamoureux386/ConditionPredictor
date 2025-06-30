@@ -1,0 +1,5 @@
+// Commands and parameters for a small tokenization pipeline.
+
+add SimpleSegmentAnnotator
+add SentenceDetector
+add TokenizerAnnotatorPTB

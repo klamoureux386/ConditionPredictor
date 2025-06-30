@@ -1,0 +1,7 @@
+// Clinical Pipeline with sections, paragraphs, lists, events, times, temporal and event-doc creation time relations.
+
+// Clinical Pipeline with section, paragraph and list detection.
+load SectionedFastPipeline
+
+// events, times, event-event, event-time and event-doc creation time relations.
+load TemporalSubPipe

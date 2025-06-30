@@ -1,0 +1,7 @@
+// Pipeline with degree-of and location-of relations and coreference resolution.
+
+// Pipeline with degree-of and location-of relations
+load DefaultRelationPipeline
+
+// Coreference resolution
+load CorefSubPipe

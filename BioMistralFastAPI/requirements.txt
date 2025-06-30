@@ -1,0 +1,20 @@
+Flask==3.0.3
+gunicorn
+
+# Observability
+opentelemetry-distro
+opentelemetry-exporter-otlp-proto-grpc
+opentelemetry-instrumentation-flask
+
+# Required for quantized BioMistral 7B inference
+torch>=2.0.0
+transformers>=4.37.0
+bitsandbytes>=0.37.0
+accelerate>=0.20.0
+
+# GPU detection for vLLM
+pynvml==12.0.0
+nvidia-ml-py>=12.0.0,<13.0.0
+
+# (Optional) For alternative quantization backends
+# optimum-quanto

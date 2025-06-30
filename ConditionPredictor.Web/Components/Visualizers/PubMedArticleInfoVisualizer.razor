@@ -1,0 +1,45 @@
+﻿@using ConditionPredictor.Web.Models.PubMed
+@using System.Text.Json
+
+<div class="text-lg font-semibold">@ArticleInfo.Title</div>
+
+<div class="text-sm text-gray-600">
+    <span class="font-medium">Source:</span> @ArticleInfo.Source
+</div>
+
+<div class="text-sm text-gray-600">
+    <span class="font-medium">Published:</span> @ArticleInfo.PubDate
+</div>
+
+@if (ArticleInfo.Authors?.Count > 0)
+{
+    <div class="text-sm text-gray-600">
+        <span class="font-medium">Authors:</span>
+        <ul class="list-disc list-inside ml-4">
+            @foreach (var author in ArticleInfo.Authors)
+            {
+                <li>@author.Name</li>
+            }
+        </ul>
+    </div>
+}
+else
+{
+    <div class="text-sm text-gray-500 italic">No authors listed.</div>
+}
+
+<div class="text-xs text-gray-400">UID: @ArticleInfo.Uid</div>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public PubMedArticleInfo ArticleInfo { get; set; }
+
+    public string DisplayArticle()
+    {
+        return JsonSerializer.Serialize(ArticleInfo, new JsonSerializerOptions
+        {
+            WriteIndented = true,
+        });
+    }
+}

@@ -1,0 +1,7 @@
+// Pipeline with section, paragraph and list detection and coreference resolution.
+
+// Pipeline with section, paragraph and list detection
+load SectionedFastPipeline
+
+// Coreference resolution
+load CorefSubPipe

@@ -1,0 +1,85 @@
+﻿@using ConditionPredictor.Web.Models.PubMed
+@using static ConditionPredictor.Web.Models.PubMed.PubmedArticleSet
+
+<div class="p-4 border rounded shadow space-y-2">
+    <h2 class="text-xl font-semibold">@Article.MedlineCitation.Article.ArticleTitle</h2>
+    <div class="text-gray-600 text-sm">
+        <strong>PMID:</strong> @Article.MedlineCitation.PMID<br />
+        <strong>Journal:</strong> @Article.MedlineCitation.Article.Journal.Title (@Article.MedlineCitation.Article.Journal.ISSN)<br />
+        <strong>DOI:</strong> @Article.MedlineCitation.Article.DOI<br />
+        <strong>Language:</strong> @Article.MedlineCitation.Article.Language
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Article.MedlineCitation.Article.AbstractText))
+    {
+        <div class="mt-2">
+            <strong>Abstract:</strong>
+            <p class="text-sm text-gray-700 whitespace-pre-line">@Article.MedlineCitation.Article.AbstractText</p>
+        </div>
+    }
+
+    @if (Article.MedlineCitation.Article.Authors.Any())
+    {
+        <div>
+            <strong>Authors:</strong>
+            <ul class="list-disc list-inside text-sm">
+                @foreach (var author in Article.MedlineCitation.Article.Authors)
+                {
+                    <li>@author.ForeName @author.LastName (@string.Join("; ", author.Affiliations))</li>
+                }
+            </ul>
+        </div>
+    }
+
+    @if (Article.MedlineCitation.MeshHeadingList.Any())
+    {
+        <div>
+            <strong>MeSH Terms:</strong>
+            <ul class="list-disc list-inside text-sm">
+                @foreach (var mesh in Article.MedlineCitation.MeshHeadingList)
+                {
+                    <li>
+                        @mesh.DescriptorName
+                        @if (mesh.DescriptorMajorTopic)
+                        {
+                            <span class="text-blue-600">(Major)</span>
+                        }
+                        @if (mesh.Qualifiers.Any())
+                        {
+                            <ul class="ml-4 list-disc">
+                                @foreach (var q in mesh.Qualifiers)
+                                {
+                                    <li>
+                                        @q.Name
+                                        @if (q.IsMajor)
+                                        {
+                                            <span class="text-blue-600">(Major)</span>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+
+    @if (Article.PubmedData.References.Any())
+    {
+        <div>
+            <strong>References:</strong>
+            <ul class="list-disc list-inside text-sm">
+                @foreach (var reference in Article.PubmedData.References)
+                {
+                    <li>@reference.Citation</li>
+                }
+            </ul>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public PubmedArticle Article { get; set; } = null!;
+}

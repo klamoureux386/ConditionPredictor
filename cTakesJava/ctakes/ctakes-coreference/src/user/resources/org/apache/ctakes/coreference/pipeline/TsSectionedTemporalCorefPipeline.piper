@@ -1,0 +1,8 @@
+// Thread-safe Pipeline with section, paragraph and list detection, events, times, temporal relations and document creation time relations.
+
+
+// Pipeline with section, paragraph and list detection and temporal
+load TsSectionedTemporalPipeline
+
+// Coreference resolution
+load TsCorefSubPipe

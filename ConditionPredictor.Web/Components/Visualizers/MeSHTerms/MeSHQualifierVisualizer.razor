@@ -1,0 +1,38 @@
+﻿@using static ConditionPredictor.Web.Components.Visualizers.MeSHTerms.MeSHTermsVisualizer
+
+<div class="font-semibold text-lg">@Qualifier.Name <span class="text-gray-500">(@Qualifier.Ui)</span></div>
+
+<div class="text-sm text-gray-600">
+    Abbreviation: <code>@Qualifier.Abbreviation</code><br />
+    Tree Numbers: @(
+            Qualifier.TreeNumbers.Any()
+            ? string.Join(", ", Qualifier.TreeNumbers)
+            : "(none)"
+            )
+</div>
+
+<div class="text-sm text-gray-600">
+    Created: @(Qualifier.DateCreated?.ToString("yyyy-MM-dd") ?? "(n/a)")<br />
+    Revised: @(Qualifier.DateRevised?.ToString("yyyy-MM-dd") ?? "(n/a)")<br />
+    Established: @(Qualifier.DateEstablished?.ToString("yyyy-MM-dd") ?? "(n/a)")
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Qualifier.Annotation))
+{
+    <div class="text-sm text-gray-700"><strong>Annotation:</strong> @Qualifier.Annotation</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Qualifier.HistoryNote))
+{
+    <div class="text-sm text-gray-700"><strong>History:</strong> @Qualifier.HistoryNote</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Qualifier.OnlineNote))
+{
+    <div class="text-sm text-gray-700"><strong>Online Note:</strong> @Qualifier.OnlineNote</div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public MeSHQualifier Qualifier { get; set; } = null!;
+}

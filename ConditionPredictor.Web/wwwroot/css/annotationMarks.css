@@ -1,0 +1,19 @@
+﻿.symptom {
+    color: green;
+}
+
+.disease {
+    color: red;
+}
+
+.procedure {
+    color: purple;
+}
+
+.medication {
+    color: blue;
+}
+
+.anatomical-site {
+    background-color: orange;
+}

@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Sdk Name="Aspire.AppHost.Sdk" Version="9.0.0" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAspireHost>true</IsAspireHost>
+    <UserSecretsId>c3a91262-a7a3-4827-b62f-d6ac5bcd015a</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ConditionPredictor.Web\ConditionPredictor.Web.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.3.1" />
+    <PackageReference Include="Aspire.Hosting.Python" Version="9.3.1" />
+    <PackageReference Include="Aspire.Hosting.Redis" Version="9.3.1" />
+    <PackageReference Include="CommunityToolkit.Aspire.Hosting.Java" Version="9.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ConditionPredictor.Web\ConditionPredictor.Web.csproj" />
+    <ProjectReference Include="..\CTakesWrapper\CTakesWrapper.csproj" />
+  </ItemGroup>
+
+
+</Project>

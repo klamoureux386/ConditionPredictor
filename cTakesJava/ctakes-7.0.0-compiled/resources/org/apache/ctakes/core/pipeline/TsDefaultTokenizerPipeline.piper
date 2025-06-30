@@ -1,0 +1,5 @@
+// Commands and parameters for a small thread-safe tokenization pipeline.
+
+add SimpleSegmentAnnotator
+add concurrent.ThreadSafeSentenceDetector
+add TokenizerAnnotatorPTB

@@ -1,0 +1,67 @@
+﻿@using static ConditionPredictor.Web.Components.Visualizers.MeSHTerms.MeSHTermsVisualizer
+
+<div class="font-semibold text-lg">@Concept.Name <span class="text-gray-500">(@Concept.Ui)</span></div>
+
+@if (!string.IsNullOrWhiteSpace(Concept.Note))
+{
+    <div class="text-sm text-gray-700"><strong>Note:</strong> @Concept.Note</div>
+}
+
+@if (Concept.DateCreated is not null || Concept.DateRevised is not null)
+{
+    <div class="text-sm text-gray-600">
+        @if (Concept.DateCreated is not null)
+        {
+            <div>Created: @Concept.DateCreated.Value.ToString("yyyy-MM-dd")</div>
+        }
+        @if (Concept.DateRevised is not null)
+        {
+            <div>Revised: @Concept.DateRevised.Value.ToString("yyyy-MM-dd")</div>
+        }
+    </div>
+}
+
+@if (Concept.PreviousIndexing?.Any() == true)
+{
+    <div class="text-sm text-gray-700"><strong>Previous Indexing:</strong> @string.Join(", ", Concept.PreviousIndexing)</div>
+}
+
+@if (Concept.MappedDescriptors?.Any() == true)
+{
+    <div class="text-sm text-gray-700"><strong>Mapped Descriptors:</strong> @string.Join(", ", Concept.MappedDescriptors)</div>
+}
+
+@if (Concept.PharmacologicalActions?.Any() == true)
+{
+    <div class="text-sm text-gray-700"><strong>Pharmacological Actions:</strong> @string.Join(", ", Concept.PharmacologicalActions)</div>
+}
+
+@if (Concept.RegistryNumbers?.Any() == true)
+{
+    <div class="text-sm text-gray-700"><strong>Registry Numbers:</strong> @string.Join(", ", Concept.RegistryNumbers)</div>
+}
+
+@if (Concept.RelatedRegistryNumbers?.Any() == true)
+{
+    <div class="text-sm text-gray-700"><strong>Related Registry Numbers:</strong> @string.Join(", ", Concept.RelatedRegistryNumbers)</div>
+}
+
+@if (Concept.ConceptRelations?.Any() == true)
+{
+    <div class="text-sm text-gray-700">
+        <strong>Concept Relations:</strong>
+        <ul class="ml-4 list-disc">
+            @foreach (var rel in Concept.ConceptRelations)
+            {
+                <li>@rel.RelationName: @rel.Concept1UI → @rel.Concept2UI</li>
+            }
+        </ul>
+    </div>
+}
+
+@code {
+
+    [Parameter, EditorRequired]
+    public MeSHSupplementalConcept Concept { get; set; } = null!;
+
+}

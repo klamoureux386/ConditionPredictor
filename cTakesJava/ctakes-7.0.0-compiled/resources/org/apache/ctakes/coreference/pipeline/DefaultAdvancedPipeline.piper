@@ -1,0 +1,7 @@
+// Pipeline with degree-of and location-of relations, events, times, temporal relations, document creation time relations and coreferences.
+
+// Default Relation and Temporal pipeline
+load DefaultRelationTemporalPipeline
+
+// Coreference resolution
+load CorefSubPipe
