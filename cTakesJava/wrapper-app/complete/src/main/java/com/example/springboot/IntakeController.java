@@ -20,9 +20,12 @@ public class IntakeController {
     public ResponseEntity<?> index(@RequestBody String text) {
         String currentDir = System.getProperty("user.dir");
         Path cTakesPath = Paths.get(currentDir).getParent().getParent().resolve("ctakes-7.0.0-compiled");
-        Path cTakesBin = cTakesPath.resolve("bin");
-        Path batFile = cTakesBin.resolve("runClinicalPipeline.bat");
-        Path piperFile = cTakesPath.resolve("resources/org/apache/ctakes/clinical/pipeline/CustomFastPipeline.piper");
+        
+        System.out.println("cTakesPath:" + cTakesPath.toString());
+
+        Path batFile = cTakesPath.resolve("runClinicalPipeline.bat");
+
+        Path piperFile = cTakesPath.resolve("/resources/org/apache/ctakes/clinical/pipeline/CustomFastPipeline.piper");
 
         String inputPath = "C:\\ctakes-test\\input";
         String outputPath = "C:\\ctakes-test\\output";
@@ -56,7 +59,7 @@ public class IntakeController {
                     "--piper", piperFile.toString(),
                     "--key", key
             );
-            pb.directory(cTakesBin.toFile());
+            pb.directory(cTakesPath.toFile());
             pb.redirectErrorStream(true);
 
             // Start process and collect logs

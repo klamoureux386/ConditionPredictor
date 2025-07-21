@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Apache cTAKES compiled/distribution version
+apache-ctakes-*-SNAPSHOT*

@@ -8,8 +8,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var ctakes = SetupCTakesJava();
 
-//var ctakes = builder.AddProject<Projects.CTakesWrapper>("ctakeswrapper")
-//    .WithExternalHttpEndpoints();
+//var ctakes = SetupNewTestJavaWrapper();
 
 //Add the Web frontend.
 builder.AddProject<Projects.ConditionPredictor_Web>("webfrontend")
@@ -58,7 +57,7 @@ if (addBioMitral)
 
 }
 
-
+/*
 #pragma warning disable ASPIREHOSTINGPYTHON001
 
 var pythonApp = builder.AddPythonApp("BioMistralFastAPI", "../BioMistralFastAPI", "main.py")
@@ -72,39 +71,72 @@ if (builder.ExecutionContext.IsRunMode && builder.Environment.IsDevelopment())
 {
     pythonApp.WithEnvironment("DEBUG", "True");
 }
+*/
 
 builder.Build().Run();
+
+/*
+IResourceBuilder<JavaAppExecutableResource> SetupNewTestJavaWrapper() 
+{
+    //link to folder containing OpenTelemetry Java agent - opentelemetry-javaagent.jar
+    var agentJarFolder = Path.GetFullPath(Path.Combine("..", "ConditionPredictor.AppHost", "agents"));
+
+    //Path to the cTAKES folder containing the Maven build file
+    var workingDir = Path.GetFullPath("..\\cTakesJava\\wrapper-app-new");
+
+    var executableApp = builder.AddSpringApp(
+        "ctakes-api-new",
+        workingDirectory: workingDir,
+        new JavaAppExecutableResourceOptions
+        {
+            ApplicationName = "target/cdss-0.0.1-SNAPSHOT.jar",
+            OtelAgentPath = agentJarFolder
+        })
+        .WithMavenBuild()
+        .PublishAsDockerFile(c =>
+        {
+            c.WithBuildArg("JAR_NAME", "cdss-0.0.1-SNAPSHOT.jar")
+             .WithBuildArg("AGENT_PATH", "/agents")
+             .WithBuildArg("SERVER_PORT", "8085");
+        });
+
+    return executableApp;
+}
+*/
 
 IResourceBuilder<JavaAppExecutableResource> SetupCTakesJava() 
 {
     //link to folder containing OpenTelemetry Java agent - opentelemetry-javaagent.jar
-    var agentJarFolder = Path.GetFullPath(Path.Combine("..", "ConditionPredictor.AppHost"));
+    var agentJarFolder = Path.GetFullPath(Path.Combine("..", "ConditionPredictor.AppHost", "agents"));
 
     //Path to the cTAKES folder containing the Maven build file
-    var workingDir = Path.GetFullPath("..\\cTakesJava\\wrapper-app\\complete");
+    var workingDir = Path.GetFullPath("..\\cTakesJava\\wrapper-app-new");
 
     //Ensure project is built/up-to-date before adding the Spring App.
-    BuildCTAKESJavaMaven(workingDir);
+    //NOTE: THERE IS CURRENTLY A BUG WHERE THE PROCESS IS NOT ENDED WHEN .NET ASPIRE IS STOPPED. TO DO:
+    //CHECK IF THIS IS TIED TO THE SPRING INITIALIZR PROJECT CREATION VS. THE CLONED SPRINGBOOT GITHUB COPY.
+    //UPDATE: IT'S TIED TO CTAKES_HOME NOT BEING SET WHEN TRYING TO CALL THE .BAT IN INTAKE CONTROLLER IN THE JAVA WRAPPER
+    BuildCTAKESJavaMaven(builder, workingDir);
 
     return builder.AddSpringApp(
         "ctakes-api",
         workingDirectory: workingDir,
         new JavaAppExecutableResourceOptions
         {
-            ApplicationName = "target/spring-boot-complete-0.0.1-SNAPSHOT.jar",
+            ApplicationName = "target/cdss-0.0.1-SNAPSHOT.jar",
             OtelAgentPath = agentJarFolder
         })
-        .WithMavenBuild()
+        .WithMavenBuild(new MavenOptions() { Args = ["clean", "compile", "package"] }) //This isn't building the wrapper project as intended.
         .PublishAsDockerFile(c =>
         {
-            c.WithBuildArg("JAR_NAME", "spring-boot-complete-0.0.1-SNAPSHOT.jar")
+            c.WithBuildArg("JAR_NAME", "cdss-0.0.1-SNAPSHOT.jar")
              .WithBuildArg("AGENT_PATH", "/agents")
              .WithBuildArg("SERVER_PORT", "8085");
         });
 }
 
 /// <summary>Builds the cTAKES Java Maven project.</summary>
-void BuildCTAKESJavaMaven(string workingDir) 
+void BuildCTAKESJavaMaven(IDistributedApplicationBuilder builder, string workingDir) 
 {
     // Build cTAKES Java JAR before adding SpringApp
     var mvnCmd = Path.Combine(workingDir, "mvnw.cmd"); // use "mvnw" on Linux/Mac
@@ -114,7 +146,7 @@ void BuildCTAKESJavaMaven(string workingDir)
         var process = Process.Start(new ProcessStartInfo
         {
             FileName = mvnCmd,
-            Arguments = "clean package",
+            Arguments = "clean package -e",
             WorkingDirectory = workingDir,
             UseShellExecute = false,
             RedirectStandardOutput = true,
