@@ -73,7 +73,9 @@ if (builder.ExecutionContext.IsRunMode && builder.Environment.IsDevelopment())
 }
 */
 
-builder.Build().Run();
+var app = builder.Build();
+    
+app.Run();
 
 /*
 IResourceBuilder<JavaAppExecutableResource> SetupNewTestJavaWrapper() 
@@ -110,31 +112,41 @@ IResourceBuilder<JavaAppExecutableResource> SetupCTakesJava()
     var agentJarFolder = Path.GetFullPath(Path.Combine("..", "ConditionPredictor.AppHost", "agents"));
 
     //Path to the cTAKES folder containing the Maven build file
-    var workingDir = Path.GetFullPath("..\\cTakesJava\\wrapper-app-new");
+    var cTakesWorkingDir = Path.GetFullPath("..\\cTakesJava\\ctakes-7.0.0-compiled");
+    var wrapperWorkingDir = Path.GetFullPath("..\\cTakesJava\\wrapper-app-new");
 
-    //Ensure project is built/up-to-date before adding the Spring App.
-    //NOTE: THERE IS CURRENTLY A BUG WHERE THE PROCESS IS NOT ENDED WHEN .NET ASPIRE IS STOPPED. TO DO:
-    //CHECK IF THIS IS TIED TO THE SPRING INITIALIZR PROJECT CREATION VS. THE CLONED SPRINGBOOT GITHUB COPY.
-    //UPDATE: IT'S TIED TO CTAKES_HOME NOT BEING SET WHEN TRYING TO CALL THE .BAT IN INTAKE CONTROLLER IN THE JAVA WRAPPER
-    BuildCTAKESJavaMaven(builder, workingDir);
+    //TO DO: Ensure cTakes project is built/up-to-date before adding the Spring App wrapper.
+    //BuildCTAKESJavaMaven(builder, cTakesWorkingDir);
 
-    return builder.AddSpringApp(
+    //TO DO: Tomcat is not shutting down properly, presumably due to .NET Aspire not sending the shutdown signal.
+    //https://github.com/dotnet/aspire/issues/6885
+
+    var jarName = "cdss-0.0.1-SNAPSHOT.jar";
+
+    //ISSUE: CURRENTLY ASPIRE DOES NOT GRACEFULLY TERMINATE NON-.NET APPS. THIS RESULTS IN NEEDING TO MANUALLY TERMINATE THE PROCESS AFTER EACH RUN.
+    //Solution: Manual kill via PID on shutdown? Swap off .NET Aspire? Considering Airflow.
+    //https://github.com/dotnet/aspire/issues/10377
+    //https://github.com/dotnet/aspire/issues/6885
+    var ctakes = builder.AddSpringApp(
         "ctakes-api",
-        workingDirectory: workingDir,
+        workingDirectory: wrapperWorkingDir,
         new JavaAppExecutableResourceOptions
         {
-            ApplicationName = "target/cdss-0.0.1-SNAPSHOT.jar",
+            ApplicationName = $"target/{jarName}",
             OtelAgentPath = agentJarFolder
         })
-        .WithMavenBuild(new MavenOptions() { Args = ["clean", "compile", "package"] }) //This isn't building the wrapper project as intended.
+        .WithMavenBuild(new MavenOptions() { Command="mvnw.cmd", Args = ["clean", "compile", "package"] })
         .PublishAsDockerFile(c =>
         {
-            c.WithBuildArg("JAR_NAME", "cdss-0.0.1-SNAPSHOT.jar")
+            c.WithBuildArg("JAR_NAME", jarName)
              .WithBuildArg("AGENT_PATH", "/agents")
              .WithBuildArg("SERVER_PORT", "8085");
         });
+
+    return ctakes;
 }
 
+//EDIT: This is old/come back and figure out a way of keeping cTakes up to date easier when dev'ing custom pipelines.
 /// <summary>Builds the cTAKES Java Maven project.</summary>
 void BuildCTAKESJavaMaven(IDistributedApplicationBuilder builder, string workingDir) 
 {

@@ -62,7 +62,7 @@ public class IntakeController {
 
             //ERROR: Currently getting "The CTAKES_HOME environment variable is not defined correctly"
             // Modify the environment for this process only
-            pb.environment().put("CTAKES_HOME", binPath.toString());  // use your actual cTAKES install path
+            pb.environment().put("CTAKES_HOME", cTakesPath.toString());  // use your actual cTAKES install path
 
             pb.redirectErrorStream(true);
             pb.inheritIO();

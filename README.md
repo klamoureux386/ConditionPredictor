@@ -55,7 +55,10 @@ The workflow pipeline is as follows:
     9. Run the setup for cTAKES (currently just `mvn clean compile` and `mvn clean compile package`).
     9.5: Make sure you [download](https://sourceforge.net/projects/ctakesresources/files/sno_rx_16ab.zip/download) the default fast lookup dictionary and unzip it in your `resources/org/apache/ctakes/dictionary/lookup/fast` directory.
     10. Afterward, take the compiled ctakes-distribution target folder (*cTakesJava/ctakes/ctakes-distribution/target*) and move the `apache-ctakes-#.#.#.-bin.zip` file outward to the same directory as the parent ctakes folder.
-    11. Unzip the bin .zip, rename the output folder to `ctakes-7.0.0-compiled` and run .NET Aspire project. **NOTE**: There is currently a bug where access to the .bat file of the wrapper project gets locked after running the solution once. A workaround for this is to open Task Manager and end the leftover java.exe process.
+    11. Unzip the bin .zip, rename the output folder to `ctakes-7.0.0-compiled`
+    12. Navigate to src → main → bin and add a file named `.env`. Add `CTAKES_HOME=%CURRENT_DIR%` and save.
+    13. Run the .NET Aspire project. **NOTE**: There is currently a bug where access to the .bat file of the wrapper project gets locked after running the solution once. A workaround for this is to open Task Manager and end the leftover java.exe process.
+    [This link](https://github.com/dotnet/aspire/issues/10377) indicates that it is an issue with launching .NET Aspire via an IDE. Need to look into this more. After some research, it seems Apache Airflow does what I'm looking to do so I may consider switching to that.
 
 3. To run the CTakes Java wrapper standalone if testing:
     1. Open up the wrapper-app project in IntelliJ.
