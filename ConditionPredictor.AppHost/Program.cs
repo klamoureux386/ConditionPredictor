@@ -124,7 +124,7 @@ IResourceBuilder<JavaAppExecutableResource> SetupCTakesJava()
     var jarName = "cdss-0.0.1-SNAPSHOT.jar";
 
     //ISSUE: CURRENTLY ASPIRE DOES NOT GRACEFULLY TERMINATE NON-.NET APPS. THIS RESULTS IN NEEDING TO MANUALLY TERMINATE THE PROCESS AFTER EACH RUN.
-    //Solution: Manual kill via PID on shutdown? Swap off .NET Aspire? Considering Airflow.
+    //Solution: Manual kill via PID on shutdown? Swap off .NET Aspire?
     //https://github.com/dotnet/aspire/issues/10377
     //https://github.com/dotnet/aspire/issues/6885
     var ctakes = builder.AddSpringApp(
