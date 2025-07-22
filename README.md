@@ -58,7 +58,7 @@ The workflow pipeline is as follows:
     11. Unzip the bin .zip, rename the output folder to `ctakes-7.0.0-compiled`
     12. Navigate to src → main → bin and add a file named `.env`. Add `CTAKES_HOME=%CURRENT_DIR%` and save.
     13. Run the .NET Aspire project. **NOTE**: There is currently a bug where access to the .bat file of the wrapper project gets locked after running the solution once. A workaround for this is to open Task Manager and end the leftover java.exe process.
-    [This link](https://github.com/dotnet/aspire/issues/10377) indicates that it is an issue with launching .NET Aspire via an IDE. Need to look into this more. After some research, it seems Apache Airflow does what I'm looking to do so I may consider switching to that.
+    [This link](https://github.com/dotnet/aspire/issues/10377) indicates that it is an issue with launching .NET Aspire via an IDE. Need to look into this more and determine if I need an alternative way to launch the app/automatic kill process, etc.
 
 3. To run the CTakes Java wrapper standalone if testing:
     1. Open up the wrapper-app project in IntelliJ.

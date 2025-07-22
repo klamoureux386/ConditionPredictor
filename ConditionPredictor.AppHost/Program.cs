@@ -77,35 +77,6 @@ var app = builder.Build();
     
 app.Run();
 
-/*
-IResourceBuilder<JavaAppExecutableResource> SetupNewTestJavaWrapper() 
-{
-    //link to folder containing OpenTelemetry Java agent - opentelemetry-javaagent.jar
-    var agentJarFolder = Path.GetFullPath(Path.Combine("..", "ConditionPredictor.AppHost", "agents"));
-
-    //Path to the cTAKES folder containing the Maven build file
-    var workingDir = Path.GetFullPath("..\\cTakesJava\\wrapper-app-new");
-
-    var executableApp = builder.AddSpringApp(
-        "ctakes-api-new",
-        workingDirectory: workingDir,
-        new JavaAppExecutableResourceOptions
-        {
-            ApplicationName = "target/cdss-0.0.1-SNAPSHOT.jar",
-            OtelAgentPath = agentJarFolder
-        })
-        .WithMavenBuild()
-        .PublishAsDockerFile(c =>
-        {
-            c.WithBuildArg("JAR_NAME", "cdss-0.0.1-SNAPSHOT.jar")
-             .WithBuildArg("AGENT_PATH", "/agents")
-             .WithBuildArg("SERVER_PORT", "8085");
-        });
-
-    return executableApp;
-}
-*/
-
 IResourceBuilder<JavaAppExecutableResource> SetupCTakesJava() 
 {
     //link to folder containing OpenTelemetry Java agent - opentelemetry-javaagent.jar
