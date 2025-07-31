@@ -52,13 +52,11 @@ The workflow pipeline is as follows:
     6. Download the latest version of Maven.
     7. Navigate to the CTakesJava directory.
     8. Clone the Apache cTAKES [fork] (https://github.com/klamoureux386/cdss-ctakes) into the CTakesJava folder of your machine.
-    9. Run the setup for cTAKES (currently just `mvn clean compile` and `mvn clean compile package`).
-    9.5: Make sure you [download](https://sourceforge.net/projects/ctakesresources/files/sno_rx_16ab.zip/download) the default fast lookup dictionary and unzip it in your `resources/org/apache/ctakes/dictionary/lookup/fast` directory.
+    9. Run the setup for cTAKES (currently just `mvn clean compile` and `mvn clean compile package`). Make sure you [download](https://sourceforge.net/projects/ctakesresources/files/sno_rx_16ab.zip/download) the default fast lookup dictionary and unzip it in your `resources/org/apache/ctakes/dictionary/lookup/fast` directory.
     10. Afterward, take the compiled ctakes-distribution target folder (*cTakesJava/ctakes/ctakes-distribution/target*) and move the `apache-ctakes-#.#.#.-bin.zip` file outward to the same directory as the parent ctakes folder.
     11. Unzip the bin .zip, rename the output folder to `ctakes-7.0.0-compiled`
     12. Navigate to src → main → bin and add a file named `.env`. Add `CTAKES_HOME=%CURRENT_DIR%` and save.
-    13. Run the .NET Aspire project. **NOTE**: There is currently a bug where access to the .bat file of the wrapper project gets locked after running the solution once. A workaround for this is to open Task Manager and end the leftover java.exe process.
-    [This link](https://github.com/dotnet/aspire/issues/10377) indicates that it is an issue with launching .NET Aspire via an IDE. Need to look into this more and determine if I need an alternative way to launch the app/automatic kill process, etc.
+    13. Download the [Aspire 9.4 CLI](https://learn.microsoft.com/en-us/dotnet/aspire/whats-new/dotnet-aspire-9.4) and launch the project from the AppHost directory using `aspire run`. NOTE: Running from Visual Studio results an [issue](https://github.com/dotnet/aspire/issues/10377) where the Java process (and by extension, Tomcat server occupying the port) isn't gracefully terminated on project shutdown. Shutting down via the IDE doesn't send the SIGTERM signal properly compared to the CLI.
 
 3. To run the CTakes Java wrapper standalone if testing:
     1. Open up the wrapper-app project in IntelliJ.

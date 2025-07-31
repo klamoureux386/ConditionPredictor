@@ -46,7 +46,9 @@ public class IntakeController {
             Files.createDirectories(Paths.get(inputPath));
 
             // Write input
-            Files.write(inputFile, text.getBytes(StandardCharsets.UTF_8));
+            Files.writeString(inputFile, text);
+
+            logger.info("Starting process with --piper: {}", piperFile.toString());
 
             // Build the process
             ProcessBuilder pb = new ProcessBuilder(
@@ -54,7 +56,7 @@ public class IntakeController {
                     "-i", inputPath,
                     "-o", outputPath,
                     "--xmiOut", outputPath,
-                    "--piper", piperFile.toString(),
+                    "-p", piperFile.toString(),
                     "--key", key
             );
             //Set working directory
