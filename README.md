@@ -67,3 +67,9 @@ The workflow pipeline is as follows:
     3. You may need to right click the project and hit Maven → Sync Project if you get any errors about dependencies.
 
 ## Python & vLLM Setup
+
+## Observability
+
+### Request Duration
+TO DO: Explain what this is/how to use.
+<img width="1912" height="1148" alt="image" src="https://github.com/user-attachments/assets/b629fd98-7f66-49e6-800b-ae2f72321949" />
