@@ -19,8 +19,7 @@ load DictionarySubPipe
 // Add Cleartk Entity Attribute annotators
 load AttributeCleartkSubPipe
 
-add org.apache.ctakes.core.cc.pretty.html.HtmlTextWriter OutputDirectory=C:\ctakes-test\output
-//add org.apache.ctakes.core.cc.pretty.plaintext.PrettyTextWriter OutputDirectory=C:\ctakes-test\output
+add org.apache.ctakes.core.cc.pretty.html.HtmlTextWriter
 
 // Log run time stats and completion
 addLast util.log.FinishedLogger

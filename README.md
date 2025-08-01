@@ -51,7 +51,7 @@ The workflow pipeline is as follows:
     5. If you see: `PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target` in the .NET Aspire Java logs at all, that means something went wrong during the above!
     6. Download the latest version of Maven.
     7. Navigate to the CTakesJava directory.
-    8. Clone the Apache cTAKES [fork] (https://github.com/klamoureux386/cdss-ctakes) into the CTakesJava folder of your machine.
+    8. Clone the Apache cTAKES [fork] (https://github.com/klamoureux386/cdss-ctakes) into the CTakesJava folder of your machine. NOTE: Any cTAKES customization should be done against this repository.
     9. Run the setup for cTAKES (currently just `mvn clean compile` and `mvn clean compile package`). Make sure you [download](https://sourceforge.net/projects/ctakesresources/files/sno_rx_16ab.zip/download) the default fast lookup dictionary and unzip it in your `resources/org/apache/ctakes/dictionary/lookup/fast` directory.
     10. Afterward, take the compiled ctakes-distribution target folder (*cTakesJava/ctakes/ctakes-distribution/target*) and move the `apache-ctakes-#.#.#.-bin.zip` file outward to the same directory as the parent ctakes folder.
     11. Unzip the bin .zip, rename the output folder to `ctakes-7.0.0-compiled`

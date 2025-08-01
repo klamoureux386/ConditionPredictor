@@ -14,7 +14,7 @@ public class CTakesController {
     public String index() {
         System.out.println("Logging hit (System.out)!");
         logger.info("Logging hit (logger)!");
-        return "Java wrapper working for CDSS v4!";
+        return "Java wrapper working for CDSS v2!";
     }
 
 }

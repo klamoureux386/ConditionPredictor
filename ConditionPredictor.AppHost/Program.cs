@@ -82,8 +82,6 @@ IResourceBuilder<JavaAppExecutableResource> SetupCTakesJava()
     //link to folder containing OpenTelemetry Java agent - opentelemetry-javaagent.jar
     var agentJarFolder = Path.GetFullPath(Path.Combine("..", "ConditionPredictor.AppHost", "agents"));
 
-    //Path to the cTAKES folder containing the Maven build file
-    var cTakesWorkingDir = Path.GetFullPath("..\\cTakesJava\\ctakes-7.0.0-compiled");
     var wrapperWorkingDir = Path.GetFullPath("..\\cTakesJava\\wrapper-app-new");
 
     //TO DO: Ensure cTakes project is built/up-to-date before adding the Spring App wrapper.
@@ -106,7 +104,7 @@ IResourceBuilder<JavaAppExecutableResource> SetupCTakesJava()
             ApplicationName = $"target/{jarName}",
             OtelAgentPath = agentJarFolder
         })
-        .WithMavenBuild(new MavenOptions() { Command="mvnw.cmd", Args = ["clean", "compile", "package"] })
+        .WithMavenBuild(new MavenOptions() { Command="mvnw", Args = ["compile", "package"] })
         .PublishAsDockerFile(c =>
         {
             c.WithBuildArg("JAR_NAME", jarName)

@@ -20,8 +20,9 @@ public class IntakeController {
     public ResponseEntity<?> index(@RequestBody String text) {
         String currentDir = System.getProperty("user.dir");
         Path projectHome = Paths.get(currentDir).getParent();
+        //Path cTakesPath = projectHome.resolve("ctakes-7.0.0-compiled");
         Path cTakesPath = projectHome.resolve("ctakes-7.0.0-compiled");
-        Path binPath = cTakesPath.resolve("src/main/bin");
+        Path binPath = cTakesPath.resolve("bin");
         Path batFile = binPath.resolve("runClinicalPipeline.bat");
         Path piperFile = cTakesPath.resolve("resources/org/apache/ctakes/clinical/pipeline/CustomFastPipeline.piper");
 
@@ -56,7 +57,7 @@ public class IntakeController {
                     "-i", inputPath,
                     "-o", outputPath,
                     "--xmiOut", outputPath,
-                    "-p", piperFile.toString(),
+                    "--piper", "\"" + piperFile.toString() + "\"",
                     "--key", key
             );
             //Set working directory
@@ -85,7 +86,9 @@ public class IntakeController {
             int maxTries = 5;
             int currentTry = 1;
             while (!Files.exists(outputFile)) {
-                if (currentTry++ > maxTries) throw new RuntimeException("Exceeded max retries while polling for cTAKES output.");
+                if (currentTry++ > maxTries) {
+                    throw new RuntimeException("Exceeded max retries while polling for cTAKES output. Expecting file: " + outputFile);
+                }
                 Thread.sleep(5000);
             }
 
