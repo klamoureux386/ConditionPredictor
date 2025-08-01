@@ -8,8 +8,6 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var ctakes = SetupCTakesJava();
 
-//var ctakes = SetupNewTestJavaWrapper();
-
 //Add the Web frontend.
 builder.AddProject<Projects.ConditionPredictor_Web>("webfrontend")
     .WithExternalHttpEndpoints()
@@ -81,21 +79,9 @@ IResourceBuilder<JavaAppExecutableResource> SetupCTakesJava()
 {
     //link to folder containing OpenTelemetry Java agent - opentelemetry-javaagent.jar
     var agentJarFolder = Path.GetFullPath(Path.Combine("..", "ConditionPredictor.AppHost", "agents"));
-
     var wrapperWorkingDir = Path.GetFullPath("..\\cTakesJava\\wrapper-app");
-
-    //TO DO: Ensure cTakes project is built/up-to-date before adding the Spring App wrapper.
-    //BuildCTAKESJavaMaven(builder, cTakesWorkingDir);
-
-    //TO DO: Tomcat is not shutting down properly, presumably due to .NET Aspire not sending the shutdown signal.
-    //https://github.com/dotnet/aspire/issues/6885
-
     var jarName = "cdss-0.0.1-SNAPSHOT.jar";
 
-    //ISSUE: CURRENTLY ASPIRE DOES NOT GRACEFULLY TERMINATE NON-.NET APPS. THIS RESULTS IN NEEDING TO MANUALLY TERMINATE THE PROCESS AFTER EACH RUN.
-    //Solution: Manual kill via PID on shutdown? Swap off .NET Aspire?
-    //https://github.com/dotnet/aspire/issues/10377
-    //https://github.com/dotnet/aspire/issues/6885
     var ctakes = builder.AddSpringApp(
         "ctakes-api",
         workingDirectory: wrapperWorkingDir,
@@ -116,6 +102,7 @@ IResourceBuilder<JavaAppExecutableResource> SetupCTakesJava()
 }
 
 //EDIT: This is old/come back and figure out a way of keeping cTakes up to date easier when dev'ing custom pipelines.
+//Need to also copy over/unpack the distribution target .zip
 /// <summary>Builds the cTAKES Java Maven project.</summary>
 void BuildCTAKESJavaMaven(IDistributedApplicationBuilder builder, string workingDir) 
 {
