@@ -1,7 +1,0 @@
-// Thread-safe Pipeline with  coreference resolution.
-
-// Pipeline
-load TsDefaultFastPipeline
-
-// Coreference resolution
-load TsCorefSubPipe

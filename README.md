@@ -29,6 +29,10 @@ The workflow pipeline is as follows:
 
 # Project Setup
 
+## Aspire Setup
+
+1. Download the [Aspire 9.4 CLI](https://learn.microsoft.com/en-us/dotnet/aspire/whats-new/dotnet-aspire-9.4) and launch the project from the AppHost directory using `aspire run`. NOTE: Running from Visual Studio results an [issue](https://github.com/dotnet/aspire/issues/10377) where the Java process (and by extension, Tomcat server occupying the port) isn't gracefully terminated on project shutdown. Shutting down via the IDE doesn't send the SIGTERM signal properly compared to the CLI.
+
 ## Java & CTakes Setup
 
 1. Download the [latest](https://www.java.com/en/download/) version of Java (Java 17+ is required to run CTakes). This should automatically set up your JAVA_HOME path.
@@ -49,16 +53,15 @@ The workflow pipeline is as follows:
             -storepass [YOUR_PASSWORD_HERE]
         ```
     5. If you see: `PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target` in the .NET Aspire Java logs at all, that means something went wrong during the above!
-    6. Download the latest version of Maven.
-    7. Navigate to the CTakesJava directory.
-    8. Clone the Apache cTAKES [fork] (https://github.com/klamoureux386/cdss-ctakes) into the CTakesJava folder of your machine. NOTE: Any cTAKES customization should be done against this repository.
-    9. Run the setup for cTAKES (currently just `mvn clean compile` and `mvn clean compile package`). Make sure you [download](https://sourceforge.net/projects/ctakesresources/files/sno_rx_16ab.zip/download) the default fast lookup dictionary and unzip it in your `resources/org/apache/ctakes/dictionary/lookup/fast` directory.
-    10. Afterward, take the compiled ctakes-distribution target folder (*cTakesJava/ctakes/ctakes-distribution/target*) and move the `apache-ctakes-#.#.#.-bin.zip` file outward to the same directory as the parent ctakes folder.
-    11. Unzip the bin .zip, rename the output folder to `ctakes-7.0.0-compiled`
-    12. Navigate to src → main → bin and add a file named `.env`. Add `CTAKES_HOME=%CURRENT_DIR%` and save.
-    13. Download the [Aspire 9.4 CLI](https://learn.microsoft.com/en-us/dotnet/aspire/whats-new/dotnet-aspire-9.4) and launch the project from the AppHost directory using `aspire run`. NOTE: Running from Visual Studio results an [issue](https://github.com/dotnet/aspire/issues/10377) where the Java process (and by extension, Tomcat server occupying the port) isn't gracefully terminated on project shutdown. Shutting down via the IDE doesn't send the SIGTERM signal properly compared to the CLI.
+3. Download the latest version of Maven.
+4. Navigate to the CTakesJava directory.
+5. Clone the Apache cTAKES [fork] (https://github.com/klamoureux386/cdss-ctakes) into the CTakesJava folder of your machine. NOTE: Any cTAKES customization should be done against this repository.
+6. Run the setup for cTAKES (currently just `mvn clean compile` and `mvn clean compile package`).
+7. Afterward, take the compiled ctakes-distribution target folder (*cTakesJava/ctakes/ctakes-distribution/target*) and move the `apache-ctakes-#.#.#.-bin.zip` file outward to the same directory as the parent ctakes folder.
+8. Unzip the bin .zip, rename the output folder to `cdss-ctakes-7.0.0-SNAPSHOT`
+9. Make sure you [download](https://sourceforge.net/projects/ctakesresources/files/sno_rx_16ab.zip/download) the default fast lookup dictionary and unzip it in your `cdss-ctakes-7.0.0-SNAPSHOT/resources/org/apache/ctakes/dictionary/lookup/fast` directory.
 
-3. To run the CTakes Java wrapper standalone if testing:
+10. To run the CTakes Java wrapper standalone if testing:
     1. Open up the wrapper-app project in IntelliJ.
     2. Set up a Configuration to run the app. Edit Configurations → Add New Application → Select *CDSS Application* for the Main Class → Apply. Run the application.
     3. You may need to right click the project and hit Maven → Sync Project if you get any errors about dependencies.

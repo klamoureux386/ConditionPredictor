@@ -1,2 +1,0 @@
-In cTAKES when we refer to a "chunker" we often mean a shallow parser, i.e. a component that tags noun phrases, verb phrases, etc.  
-This project provides a [Apache UIMA](https://uima.apache.org/) wrapper around the popular [Apache OpenNLP](https://opennlp.apache.org/) chunker. 

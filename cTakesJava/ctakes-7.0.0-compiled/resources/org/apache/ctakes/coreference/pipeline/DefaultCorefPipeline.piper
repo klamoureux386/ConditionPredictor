@@ -1,7 +1,0 @@
-// Pipeline with  coreference resolution.
-
-// Pipeline
-load DefaultFastPipeline
-
-// Coreference resolution
-load CorefSubPipe

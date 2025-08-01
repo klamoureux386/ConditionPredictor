@@ -1,1 +1,0 @@
-Contains code and resources required by all or most other cTAKES modules.

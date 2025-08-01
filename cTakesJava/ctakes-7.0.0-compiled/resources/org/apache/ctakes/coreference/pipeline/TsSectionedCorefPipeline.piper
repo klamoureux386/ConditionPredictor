@@ -1,7 +1,0 @@
-// Thread-safe Pipeline with section, paragraph and list detection and coreference resolution.
-
-// Pipeline with section, paragraph and list detection
-load TsSectionedFastPipeline
-
-// Coreference resolution
-load TsCorefSubPipe

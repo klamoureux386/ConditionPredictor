@@ -1,3 +1,0 @@
-//   Tiny Rest always runs a piper file with this name.
-
-load DockhandPipeline

@@ -1,7 +1,0 @@
-// Pipeline that simply reads a FHIR json file and writes a marked-up html file.
-
-package org.apache.ctakes.fhir.cr
-
-reader FhirJsonFileReader
-
-add pretty.html.HtmlTextWriter
