@@ -8,12 +8,25 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var ctakes = SetupCTakesJava();
 
+#pragma warning disable ASPIREHOSTINGPYTHON001
+var pythonApp = builder.AddPythonApp("BioMistralFastAPI", "../BioMistralFastAPI", "main.py")
+       .WithHttpEndpoint(env: "PORT")
+       .WithExternalHttpEndpoints()
+       .WithOtlpExporter();
+#pragma warning restore ASPIREHOSTINGPYTHON001
+
+if (builder.ExecutionContext.IsRunMode && builder.Environment.IsDevelopment())
+{
+    pythonApp.WithEnvironment("DEBUG", "True");
+}
+
 //Add the Web frontend.
 builder.AddProject<Projects.ConditionPredictor_Web>("webfrontend")
     .WithExternalHttpEndpoints()
     .WithReference(ctakes.GetEndpoint("http"))
     .WaitFor(ctakes)
-    .WithEnvironment("CTakesUrl", ctakes.GetEndpoint("http"));
+    .WithEnvironment("CTakesUrl", ctakes.GetEndpoint("http"))
+    .WaitFor(pythonApp);
 
 var hfToken = builder.Configuration["HuggingFace:Token"];
 
@@ -54,22 +67,6 @@ if (addBioMitral)
         .WithHttpEndpoint(port: 8001, targetPort: 8000, name: "inference");
 
 }
-
-/*
-#pragma warning disable ASPIREHOSTINGPYTHON001
-
-var pythonApp = builder.AddPythonApp("BioMistralFastAPI", "../BioMistralFastAPI", "main.py")
-       .WithHttpEndpoint(env: "PORT")
-       .WithExternalHttpEndpoints()
-       .WithOtlpExporter();
-
-#pragma warning restore ASPIREHOSTINGPYTHON001
-
-if (builder.ExecutionContext.IsRunMode && builder.Environment.IsDevelopment())
-{
-    pythonApp.WithEnvironment("DEBUG", "True");
-}
-*/
 
 var app = builder.Build();
     
