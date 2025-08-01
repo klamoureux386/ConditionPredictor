@@ -48,7 +48,7 @@ public class IntakeController {
             // Write input
             Files.writeString(inputFile, text);
 
-            logger.info("Starting process with --piper: {}", piperFile.toString());
+            logger.info("Starting process with -p: {}", piperFile.toString());
 
             // Build the process
             ProcessBuilder pb = new ProcessBuilder(
