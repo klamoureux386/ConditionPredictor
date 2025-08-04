@@ -4,7 +4,8 @@ This is a public-facing copy of an AI-first Clincial Decision Support System (CD
 
 It is a distributed application orchestrated via .NET Aspire. Individual services include:
 - Apache [CTAKES](https://github.com/apache/ctakes), an NLP platform for extracting information from clinical text, wrapped by a small Java+SpringBoot app.
-- A containerized instance of vLLM running BioMistral ([with local caching!](#vllm-setup)) for CTAKES annotation evaluation, wrapped by a small Python+Flask app.
+- A containerized instance of vLLM running BioMistral ([with local caching!](#vllm-setup)) for CTAKES annotation evaluation.
+- A Python+Flask app leveraging Semantic Kernel & AutoGen for AI operations.
 - A Blazor Server web application which is the user entrypoint for interacting with these services, styled with Tailwind.
 
 Both non-.NET apps are set up with OpenTelemetry to integrate with .NET Aspire's robust observability features.
