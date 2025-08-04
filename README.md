@@ -3,8 +3,8 @@
 This is a public-facing copy of an AI-first Clincial Decision Support System (CDSS) I'm working on.
 
 It is a distributed application orchestrated via .NET Aspire. Individual services include:
-- A Java SpringBoot app which wraps Apache [CTAKES](https://github.com/apache/ctakes), an NLP platform for extracting information from clinical text.
-- A vLLM-hosted instance of a bio-focused LLM for CTAKES annotation evaluation, wrapped by a small Python+Flask app.
+- Apache [CTAKES](https://github.com/apache/ctakes), an NLP platform for extracting information from clinical text, wrapped by a small Java+SpringBoot app.
+- A containerized instance of vLLM running BioMistral ([with local caching!](#vllm-setup)) for CTAKES annotation evaluation, wrapped by a small Python+Flask app.
 - A Blazor Server web application which is the user entrypoint for interacting with these services, styled with Tailwind.
 
 Both non-.NET apps are set up with OpenTelemetry to integrate with .NET Aspire's robust observability features.
@@ -81,8 +81,8 @@ The workflow pipeline is as follows:
 7. Copy the name (id) of the latest snapshot folder and paste that value into the `Models:Biomistral:SnapshotId` appsetting. This folder contains the necessary config.json vLLM requires to set up the model.
 8. Run the application again and verify the retrieval from the local directory in the vLLM logs.
 
-## Observability
+# Observability
 
-### Request Duration
+## Request Duration
 TO DO: Explain what this is/how to use.
 <img width="1912" height="1148" alt="image" src="https://github.com/user-attachments/assets/b629fd98-7f66-49e6-800b-ae2f72321949" />
