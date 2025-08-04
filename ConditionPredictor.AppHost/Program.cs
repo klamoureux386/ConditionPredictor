@@ -30,28 +30,30 @@ builder.AddProject<Projects.ConditionPredictor_Web>("webfrontend")
 
 var hfToken = builder.Configuration["HuggingFace:Token"];
 
-//Add the BioMistral Project
-//https://learn.microsoft.com/en-us/dotnet/aspire/get-started/build-aspire-apps-with-python
-
-bool useCached = false; //builder.Configuration.GetValue("BioMistral:UseCachedModel", false);
-//Use AWQ version to reduce VRAM necessary for local development?
-bool useDareAWQ = true;
+//TO DO: Options pattern & type safety.
+string modelName = builder.Configuration["Models:BioMistral:ModelName"]!;
+string snapshotId = builder.Configuration["Models:BioMistral:SnapshotId"]!;
+bool useCached = bool.Parse(builder.Configuration["Models:BioMistral:UseCached"]!);
 string containerCacheDir = "/root/.cache/huggingface/hub";
+string modelDir = useCached ? $"{containerCacheDir}/models--{modelName.Replace("/", "--")}/snapshots/{snapshotId}" : modelName;
 
-//string modelDir = useCached ? $"{containerCacheDir}/models--BioMistral--BioMistral-7B" : $"BioMistral/BioMistral-7B{(useDareAWQ ? "-AWQ-QGS128-W4-GEMM" : "")}";
-
-//To do: ensure this uses the .cache folder
-bool addBioMitral = false;
+bool addBioMitral = true;
 
 if (addBioMitral)
-{
+    SetupBiomistralvLLM();
 
-    var biomistralApi = builder
-        .AddContainer("biomistral-vllm", image: "vllm/vllm-openai:latest")
+var app = builder.Build();
+    
+app.Run();
+
+IResourceBuilder<ContainerResource> SetupBiomistralvLLM() 
+{
+    return builder.AddContainer("biomistral-vllm", image: "vllm/vllm-openai:latest")
         .WithEnvironment("HF_TOKEN", hfToken)
-        //.WithBindMount(".cache/huggingface", containerCacheDir)``
+        .WithBindMount(".cache/huggingface/hub", containerCacheDir, isReadOnly: false)
         .WithArgs(
-            "--model", "BioMistral/BioMistral-7B-AWQ-QGS128-W4-GEMM",
+            "--model", modelDir,
+            "--served-model-name", modelName,
             "--host", "0.0.0.0",
             "--port", "8000",
             //Local model handicaps to account for only having 10GiB VRAM.
@@ -59,18 +61,14 @@ if (addBioMitral)
                                              //"--max-model-len", "2048",
                                              //"--max-num-seqs", "1",
                                              //"--enforce-eager",
+                                             //"--download_dir", containerCacheDir
             )
         .WithContainerRuntimeArgs(
             "--gpus=all",
             "-p", "8000:8000",
             "--ipc=host")
         .WithHttpEndpoint(port: 8001, targetPort: 8000, name: "inference");
-
 }
-
-var app = builder.Build();
-    
-app.Run();
 
 IResourceBuilder<JavaAppExecutableResource> SetupCTakesJava() 
 {

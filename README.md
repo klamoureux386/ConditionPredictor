@@ -67,3 +67,16 @@ The workflow pipeline is as follows:
     3. You may need to right click the project and hit Maven → Sync Project if you get any errors about dependencies.
 
 ## Python & vLLM Setup
+
+### Python Setup
+...
+
+### vLLM Setup
+1. Ensure docker desktop is installed and running on your machine as the vLLM deployment is containerized.
+2. The project is set up to leverage a locally cached version of BioMistral. To retrieve the initial model, flip the `Models:Biomistral:UseCached` appsetting to *false* and run the application with `aspire run`. Download progress, which may take a couple minutes, will be visible in the vLLM logs. Upon completion, you should see the message "Application startup complete."
+3. A bind mount between the container and your machine's file system is set up automatically in the AppHost startup. As a result, the model will have downloaded to `.cache/huggingface/hub` in your AppHost project directory.
+4. Once the model is downloaded, send a request to the vLLM API server to validate the setup. Try the `http://localhost:8000/v1/models` and `http://localhost:8000/v1/completions` endpoints.
+5. Stop the application and flip the `Models:Biomistral:UseCached` back to *true*.
+6. Check your local .cache folder in the AppHost directory and navigate to the model's */snapshots* folder.
+7. Copy the name (id) of the latest snapshot folder and paste that value into the `Models:Biomistral:SnapshotId` appsetting. This folder contains the necessary config.json vLLM requires to set up the model.
+8. Run the application again and verify the retrieval from the local directory in the vLLM logs.
