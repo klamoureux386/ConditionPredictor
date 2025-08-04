@@ -28,15 +28,6 @@ builder.AddProject<Projects.ConditionPredictor_Web>("webfrontend")
     .WithEnvironment("CTakesUrl", ctakes.GetEndpoint("http"))
     .WaitFor(pythonApp);
 
-var hfToken = builder.Configuration["HuggingFace:Token"];
-
-//TO DO: Options pattern & type safety.
-string modelName = builder.Configuration["Models:BioMistral:ModelName"]!;
-string snapshotId = builder.Configuration["Models:BioMistral:SnapshotId"]!;
-bool useCached = bool.Parse(builder.Configuration["Models:BioMistral:UseCached"]!);
-string containerCacheDir = "/root/.cache/huggingface/hub";
-string modelDir = useCached ? $"{containerCacheDir}/models--{modelName.Replace("/", "--")}/snapshots/{snapshotId}" : modelName;
-
 bool addBioMitral = true;
 
 if (addBioMitral)
@@ -48,20 +39,33 @@ app.Run();
 
 IResourceBuilder<ContainerResource> SetupBiomistralvLLM() 
 {
+    var hfToken = builder.Configuration["HuggingFace:Token"];
+
+    //TO DO: Options pattern & type safety.
+    string modelName = builder.Configuration["Models:BioMistral:ModelName"]!;
+    string snapshotId = builder.Configuration["Models:BioMistral:SnapshotId"]!;
+    bool useCached = bool.Parse(builder.Configuration["Models:BioMistral:UseCached"]!);
+    string containerCacheDir = "/root/.cache/huggingface/hub";
+    string modelDir = useCached ? $"{containerCacheDir}/models--{modelName.Replace("/", "--")}/snapshots/{snapshotId}" : modelName;
+    string containerAdapterDir = "/root/LoRA-modules";
+
     return builder.AddContainer("biomistral-vllm", image: "vllm/vllm-openai:latest")
         .WithEnvironment("HF_TOKEN", hfToken)
+        // Local cache for downloaded HF model
         .WithBindMount(".cache/huggingface/hub", containerCacheDir, isReadOnly: false)
+        // Set LoRA training directory
+        .WithBindMount("LoRA-modules", containerAdapterDir, isReadOnly: false)
         .WithArgs(
             "--model", modelDir,
             "--served-model-name", modelName,
             "--host", "0.0.0.0",
             "--port", "8000",
             //Local model handicaps to account for only having 10GiB VRAM.
-            "--gpu_memory_utilization", "0.7"//, //Reduce GPU consumption to 70%
-                                             //"--max-model-len", "2048",
-                                             //"--max-num-seqs", "1",
-                                             //"--enforce-eager",
-                                             //"--download_dir", containerCacheDir
+            "--gpu_memory_utilization", "0.7",  // Cap GPU consumption at 70%
+            "--enable-lora",                    // Enable LoRA adapter support
+            "--lora-modules",                   // Preload up to N adapters
+                $"fake-syndrome={containerAdapterDir}/fake-syndrome-lora",
+            "--max-loras", "5"                  // Limit concurrent acitve adapters to reduce VRAM
             )
         .WithContainerRuntimeArgs(
             "--gpus=all",
