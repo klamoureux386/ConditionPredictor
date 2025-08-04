@@ -80,3 +80,9 @@ The workflow pipeline is as follows:
 6. Check your local .cache folder in the AppHost directory and navigate to the model's */snapshots* folder.
 7. Copy the name (id) of the latest snapshot folder and paste that value into the `Models:Biomistral:SnapshotId` appsetting. This folder contains the necessary config.json vLLM requires to set up the model.
 8. Run the application again and verify the retrieval from the local directory in the vLLM logs.
+
+## Observability
+
+### Request Duration
+TO DO: Explain what this is/how to use.
+<img width="1912" height="1148" alt="image" src="https://github.com/user-attachments/assets/b629fd98-7f66-49e6-800b-ae2f72321949" />
