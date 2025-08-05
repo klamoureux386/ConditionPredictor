@@ -49,29 +49,45 @@ IResourceBuilder<ContainerResource> SetupBiomistralvLLM()
     string modelDir = useCached ? $"{containerCacheDir}/models--{modelName.Replace("/", "--")}/snapshots/{snapshotId}" : modelName;
     string containerAdapterDir = "/root/LoRA-modules";
 
-    return builder.AddContainer("biomistral-vllm", image: "vllm/vllm-openai:latest")
-        .WithEnvironment("HF_TOKEN", hfToken)
-        // Local cache for downloaded HF model
-        .WithBindMount(".cache/huggingface/hub", containerCacheDir, isReadOnly: false)
-        // Set LoRA training directory
-        .WithBindMount("LoRA-modules", containerAdapterDir, isReadOnly: false)
-        .WithArgs(
+    List<string> vLLM_args = [
             "--model", modelDir,
             "--served-model-name", modelName,
             "--host", "0.0.0.0",
             "--port", "8000",
             //Local model handicaps to account for only having 10GiB VRAM.
             "--gpu_memory_utilization", "0.7",  // Cap GPU consumption at 70%
+            //"--max-model-len", "16384"        // Optionally cut model len in half due to GPU capacity limitations
+            //"--quantization", "awq"             // REQUIRED for AWQ models such as BioMistral-7B-AWQ-QGS128-W4-GEMM
+        ];
+
+    List<string> LoRA_args = [
             "--enable-lora",                    // Enable LoRA adapter support
             "--lora-modules",                   // Preload up to N adapters
                 $"fake-syndrome={containerAdapterDir}/fake-syndrome-lora",
             "--max-loras", "5"                  // Limit concurrent acitve adapters to reduce VRAM
+        ];
+
+    bool useLoRA = false;
+
+    if (useLoRA)
+        vLLM_args.AddRange(LoRA_args);
+
+    var vLLM = builder.AddContainer("biomistral-vllm", image: "vllm/vllm-openai:latest")
+        .WithEnvironment("HF_TOKEN", hfToken)
+        // Local cache for downloaded HF model
+        .WithBindMount(".cache/huggingface/hub", containerCacheDir, isReadOnly: false)
+        // Set LoRA training directory
+        .WithBindMount("LoRA-modules", containerAdapterDir, isReadOnly: false)
+        .WithArgs(
+            vLLM_args.ToArray()
             )
         .WithContainerRuntimeArgs(
             "--gpus=all",
             "-p", "8000:8000",
             "--ipc=host")
         .WithHttpEndpoint(port: 8001, targetPort: 8000, name: "inference");
+
+    return vLLM;
 }
 
 IResourceBuilder<JavaAppExecutableResource> SetupCTakesJava() 

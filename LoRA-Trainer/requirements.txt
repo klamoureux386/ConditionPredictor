@@ -1,0 +1,8 @@
+transformers
+peft
+datasets
+pathlib
+
+# For hosting AWQ version of BioMistral-7B (BioMistral-7B-AWQ-QGS128-W4-GEMM):
+# torch # required for autoawq
+# autoawq
