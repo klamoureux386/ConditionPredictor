@@ -3,9 +3,10 @@
 This is a public-facing copy of an AI-first Clincial Decision Support System (CDSS) I'm working on.
 
 It is a distributed application orchestrated via .NET Aspire. Individual services include:
-- Apache [CTAKES](https://github.com/apache/ctakes), an NLP platform for extracting information from clinical text, wrapped by a small Java+SpringBoot app.
-- A containerized instance of vLLM running BioMistral ([with local caching!](#vllm-setup)) for CTAKES annotation evaluation.
-- A Python+Flask app leveraging Semantic Kernel & AutoGen for AI operations.
+- Apache [CTAKES](https://github.com/apache/ctakes), an NLP platform for extracting information from clinical text, wrapped by a small Java + SpringBoot app.
+- A containerized instance of vLLM running [microsoft/MediPhi-Instruct](https://huggingface.co/microsoft/MediPhi-Instruct) (with local caching!) for CTAKES annotation evaluation.
+- An exploratory/demonstrative LoRA setup for post-training fine-tuning of MediPhi-Instruct.
+- A Python + Flask app leveraging Semantic Kernel & AutoGen for AI operations.
 - A Blazor Server web application which is the user entrypoint for interacting with these services, styled with Tailwind.
 
 Both non-.NET apps are set up with OpenTelemetry to integrate with .NET Aspire's robust observability features.
@@ -73,17 +74,50 @@ The workflow pipeline is as follows:
 ...
 
 ### vLLM Setup
+
 1. Ensure docker desktop is installed and running on your machine as the vLLM deployment is containerized.
-2. The project is set up to leverage a locally cached version of BioMistral. To retrieve the initial model, flip the `Models:Biomistral:UseCached` appsetting to *false* and run the application with `aspire run`. Download progress, which may take a couple minutes, will be visible in the vLLM logs. Upon completion, you should see the message "Application startup complete."
+2. The project is set up to leverage a locally cached version of MediPhi. To retrieve the initial model, flip the `Models:MediPhi:UseCached` appsetting to *false* and run the application with `aspire run`. Download progress, which may take a couple minutes, will be visible in the vLLM logs. Upon completion, you should see the message "Application startup complete."
 3. A bind mount between the container and your machine's file system is set up automatically in the AppHost startup. As a result, the model will have downloaded to `.cache/huggingface/hub` in your AppHost project directory.
 4. Once the model is downloaded, send a request to the vLLM API server to validate the setup. Try the `http://localhost:8000/v1/models` and `http://localhost:8000/v1/completions` endpoints.
-5. Stop the application and flip the `Models:Biomistral:UseCached` back to *true*.
+5. Stop the application and flip the `Models:MediPhi:UseCached` back to *true*.
 6. Check your local .cache folder in the AppHost directory and navigate to the model's */snapshots* folder.
-7. Copy the name (id) of the latest snapshot folder and paste that value into the `Models:Biomistral:SnapshotId` appsetting. This folder contains the necessary config.json vLLM requires to set up the model.
+7. Copy the name (id) of the latest snapshot folder and paste that value into the `Models:MediPhi:SnapshotId` appsetting. This folder contains the necessary config.json vLLM requires to set up the model.
 8. Run the application again and verify the retrieval from the local directory in the vLLM logs.
+
+## Fine-tuning w/ Low-Rank Adaptation (LoRA)
+
+1. Navigate to the `LoRA-Trainer` directory
+2. Review the contents of `fake-disease.jsonl`. This file contains a series of inputs/outputs describing a fictional disease.
+3. Run the `adapter-trainer.py` file. This will generate a `fake-disease-adapter` directory containing an `adapter_config.json` which vLLM uses to load the adapter.
+4. Flip the `enableLoRA` appsetting to *true* if not already set.
+5. Run the application via `aspire run` and send the following request to `http://localhost:8000/v1/completions`:
+    ```
+    {
+        "model": "fake-syndrome",
+        "prompt": "What is Lysia?",
+        "max_tokens": 256,
+        "temperature": 0.2,
+        "top_p": 0.9,
+        "stream": false
+    }
+    ```
+6. The model should then base its response off of the fictional training data mentioned in step 2. It is important to note that we're calling the adapter directly here by setting the model to *fake-syndrome*. vLLM offers a variety of alternative ways to interact with LoRAs which I won't cover here (yet 🙂).
 
 # Observability
 
 ## Request Duration
 TO DO: Explain what this is/how to use.
 <img width="1912" height="1148" alt="image" src="https://github.com/user-attachments/assets/b629fd98-7f66-49e6-800b-ae2f72321949" />
+
+# .gitignore Settings
+
+## Apache cTAKES compiled/distribution version
+
+The below patterns are excluded from source control due to the size of ctakes distributions. Any changes to base ctakes should be pushed to the cdss-ctakes fork repo.
+- *apache-ctakes-\*-SNAPSHOT\**
+- *cdss-ctakes-\*-SNAPSHOT\**
+
+## LoRA fine-tuning folder
+
+The final adapter is excluded from source control as it can be easily generated locally and is several GBs in size.
+- */LoRA-Trainer/fake-disease-adapter*

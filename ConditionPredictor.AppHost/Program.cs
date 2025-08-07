@@ -28,23 +28,23 @@ builder.AddProject<Projects.ConditionPredictor_Web>("webfrontend")
     .WithEnvironment("CTakesUrl", ctakes.GetEndpoint("http"))
     .WaitFor(pythonApp);
 
-bool addBioMitral = true;
+bool addMediPhi = true;
 
-if (addBioMitral)
-    SetupBiomistralvLLM();
+if (addMediPhi)
+    SetupMediPhivLLM();
 
 var app = builder.Build();
     
 app.Run();
 
-IResourceBuilder<ContainerResource> SetupBiomistralvLLM() 
+IResourceBuilder<ContainerResource> SetupMediPhivLLM() 
 {
     var hfToken = builder.Configuration["HuggingFace:Token"];
 
     //TO DO: Options pattern & type safety.
-    string modelName = builder.Configuration["Models:BioMistral:ModelName"]!;
-    string snapshotId = builder.Configuration["Models:BioMistral:SnapshotId"]!;
-    bool useCached = bool.Parse(builder.Configuration["Models:BioMistral:UseCached"]!);
+    string modelName = builder.Configuration["Models:MediPhi:ModelName"]!;
+    string snapshotId = builder.Configuration["Models:MediPhi:SnapshotId"]!;
+    bool useCached = bool.Parse(builder.Configuration["Models:MediPhi:UseCached"]!);
     string containerCacheDir = "/root/.cache/huggingface/hub";
     string modelDir = useCached ? $"{containerCacheDir}/models--{modelName.Replace("/", "--")}/snapshots/{snapshotId}" : modelName;
     string hostAdapterDir = "../LoRA-Trainer/fake-disease-adapter";
@@ -67,12 +67,12 @@ IResourceBuilder<ContainerResource> SetupBiomistralvLLM()
             "--max-loras", "5"                  // Limit concurrent acitve adapters to reduce VRAM
         ];
 
-    bool useLoRA = true;
+    bool enableLoRA = bool.Parse(builder.Configuration["Models:MediPhi:EnableLoRA"]!);
 
-    if (useLoRA)
+    if (enableLoRA)
         vLLM_args.AddRange(LoRA_args);
 
-    var vLLM = builder.AddContainer("biomistral-vllm", image: "vllm/vllm-openai:latest")
+    var vLLM = builder.AddContainer("mediphi-vllm", image: "vllm/vllm-openai:latest")
         .WithEnvironment("HF_TOKEN", hfToken)
         // Local cache for downloaded HF model
         .WithBindMount(".cache/huggingface/hub", containerCacheDir, isReadOnly: false)

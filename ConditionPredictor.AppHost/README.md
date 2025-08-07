@@ -1,4 +1,4 @@
-The BioMistral vLLM deployment caches the weights & model on your local file system via the use of
+The vLLM deployment caches the weights & model on your local file system via the use of
 the BindMount command below:
 
 .WithEnvironment("HF_HOME", "/root/.cache/huggingface")
