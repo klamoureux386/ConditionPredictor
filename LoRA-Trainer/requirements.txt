@@ -1,8 +1,8 @@
-transformers
+transformers # Necessary due to autoawq being deprecated
 peft
 datasets
 pathlib
 
 # For hosting AWQ version of BioMistral-7B (BioMistral-7B-AWQ-QGS128-W4-GEMM):
-# torch # required for autoawq
+# torch==2.6.0 # last torch version at time of autoawq deprecation
 # autoawq

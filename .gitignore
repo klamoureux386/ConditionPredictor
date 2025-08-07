@@ -365,3 +365,6 @@ FodyWeavers.xsd
 # Apache cTAKES compiled/distribution version
 apache-ctakes-*-SNAPSHOT*
 cdss-ctakes-*-SNAPSHOT*
+
+# LoRA fine-tuning folder
+/LoRA-Trainer/fake-disease-adapter

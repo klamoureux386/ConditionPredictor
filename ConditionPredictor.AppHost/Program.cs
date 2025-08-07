@@ -47,7 +47,8 @@ IResourceBuilder<ContainerResource> SetupBiomistralvLLM()
     bool useCached = bool.Parse(builder.Configuration["Models:BioMistral:UseCached"]!);
     string containerCacheDir = "/root/.cache/huggingface/hub";
     string modelDir = useCached ? $"{containerCacheDir}/models--{modelName.Replace("/", "--")}/snapshots/{snapshotId}" : modelName;
-    string containerAdapterDir = "/root/LoRA-modules";
+    string hostAdapterDir = "../LoRA-Trainer/fake-disease-adapter";
+    string containerAdapterDir = "/root/LoRA-modules/fake-disease-adapter";
 
     List<string> vLLM_args = [
             "--model", modelDir,
@@ -55,19 +56,18 @@ IResourceBuilder<ContainerResource> SetupBiomistralvLLM()
             "--host", "0.0.0.0",
             "--port", "8000",
             //Local model handicaps to account for only having 10GiB VRAM.
-            "--gpu_memory_utilization", "0.7",  // Cap GPU consumption at 70%
-            //"--max-model-len", "16384"        // Optionally cut model len in half due to GPU capacity limitations
-            //"--quantization", "awq"             // REQUIRED for AWQ models such as BioMistral-7B-AWQ-QGS128-W4-GEMM
+            "--gpu_memory_utilization", "0.85", // Cap GPU consumption at 85%
+            "--max_model_len", "1024"           // Cap max token len due to GPU limitations
         ];
 
     List<string> LoRA_args = [
             "--enable-lora",                    // Enable LoRA adapter support
             "--lora-modules",                   // Preload up to N adapters
-                $"fake-syndrome={containerAdapterDir}/fake-syndrome-lora",
+                $"fake-syndrome={containerAdapterDir}",
             "--max-loras", "5"                  // Limit concurrent acitve adapters to reduce VRAM
         ];
 
-    bool useLoRA = false;
+    bool useLoRA = true;
 
     if (useLoRA)
         vLLM_args.AddRange(LoRA_args);
@@ -77,7 +77,7 @@ IResourceBuilder<ContainerResource> SetupBiomistralvLLM()
         // Local cache for downloaded HF model
         .WithBindMount(".cache/huggingface/hub", containerCacheDir, isReadOnly: false)
         // Set LoRA training directory
-        .WithBindMount("LoRA-modules", containerAdapterDir, isReadOnly: false)
+        .WithBindMount(hostAdapterDir, containerAdapterDir, isReadOnly: false)
         .WithArgs(
             vLLM_args.ToArray()
             )
