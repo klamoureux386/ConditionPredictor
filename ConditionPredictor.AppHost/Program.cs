@@ -33,9 +33,27 @@ bool addMediPhi = true;
 if (addMediPhi)
     SetupMediPhivLLM();
 
+//In development
+bool usingDockerQdrant = false;
+
+if (usingDockerQdrant)
+    SetupQdrant();
+
 var app = builder.Build();
     
 app.Run();
+
+IResourceBuilder<ContainerResource> SetupQdrant() 
+{
+    var qdrant = builder
+        .AddContainer("qdrant", image: "qdrant/qdrant")
+        .WithContainerRuntimeArgs(
+            "--gpus=all",
+            "-p", "6333:6333")
+        .WithBindMount(".qdrant", "/root/.qdrant");
+
+    return qdrant;
+}
 
 IResourceBuilder<ContainerResource> SetupMediPhivLLM() 
 {
