@@ -1,0 +1,7 @@
+service:
+  # If using an api_key in Prod TLS should be enabled or managed via an external service like nginx. Otherwise you're sending the key over an unencrypted channel.
+  enable_tls: false
+  # TO DO: Make production config with this enabled and instead pass local dev mode flag
+  # Skip check user HTTPS client certificate against CA file specified in tls config
+  verify_https_client_certificate: false
+  api_key: 'abcd'

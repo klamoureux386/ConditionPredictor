@@ -1,5 +1,6 @@
 using Aspire.Hosting;
 using ConditionPredictor.AppHost.ProgramExtensions;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
@@ -20,39 +21,40 @@ if (builder.ExecutionContext.IsRunMode && builder.Environment.IsDevelopment())
     pythonApp.WithEnvironment("DEBUG", "True");
 }
 
+var vLLM = SetupMediPhivLLM();
+
+var qdrant = SetupQdrant();
+
 //Add the Web frontend.
 builder.AddProject<Projects.ConditionPredictor_Web>("webfrontend")
     .WithExternalHttpEndpoints()
     .WithReference(ctakes.GetEndpoint("http"))
     .WaitFor(ctakes)
     .WithEnvironment("CTakesUrl", ctakes.GetEndpoint("http"))
-    .WaitFor(pythonApp);
-
-bool addMediPhi = true;
-
-if (addMediPhi)
-    SetupMediPhivLLM();
-
-//In development
-bool usingDockerQdrant = false;
-
-if (usingDockerQdrant)
-    SetupQdrant();
+    .WaitFor(pythonApp)
+    .WithEnvironment("Qdrant-ApiKey", qdrant.ApiKey)
+    //.WaitFor(qdrant.Server)   
+    .WaitFor(vLLM);
 
 var app = builder.Build();
-    
+
 app.Run();
 
-IResourceBuilder<ContainerResource> SetupQdrant() 
+(IResourceBuilder<QdrantServerResource> Server, IResourceBuilder<ParameterResource> ApiKey) SetupQdrant()
 {
-    var qdrant = builder
-        .AddContainer("qdrant", image: "qdrant/qdrant")
-        .WithContainerRuntimeArgs(
-            "--gpus=all",
-            "-p", "6333:6333")
-        .WithBindMount(".qdrant", "/root/.qdrant");
 
-    return qdrant;
+    // Store the API key as a secret parameter; Aspire passes it to the container.
+    var apiKey = builder.AddParameter("Qdrant-ApiKey", secret: true);
+
+    var qdrant = builder
+        //TO DO: Validate that we can pass RUN_MODE here
+        .AddQdrant("qdrant", apiKey)                    // uses qdrant/qdrant image
+        //.WithLifetime(ContainerLifetime.Persistent)   // Qdrant is slow to warm. Disabled until finished development.
+        .WithDataVolume()                               // mounts a Docker volume at /qdrant/storage
+        // Optional: override config (e.g., max shards, telemetry, GPU flags)
+        .WithBindMount(Path.GetFullPath("infra/qdrant/config"), "/qdrant/config/");
+
+    return (qdrant, apiKey);
 }
 
 IResourceBuilder<ContainerResource> SetupMediPhivLLM() 
