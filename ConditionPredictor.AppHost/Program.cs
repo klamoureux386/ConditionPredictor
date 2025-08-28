@@ -25,6 +25,7 @@ var vLLM = SetupMediPhivLLM();
 
 var qdrant = SetupQdrant();
 
+
 //Add the Web frontend.
 builder.AddProject<Projects.ConditionPredictor_Web>("webfrontend")
     .WithExternalHttpEndpoints()
@@ -32,9 +33,11 @@ builder.AddProject<Projects.ConditionPredictor_Web>("webfrontend")
     .WaitFor(ctakes)
     .WithEnvironment("CTakesUrl", ctakes.GetEndpoint("http"))
     .WaitFor(pythonApp)
-    .WithEnvironment("Qdrant-ApiKey", qdrant.ApiKey)
-    //.WaitFor(qdrant.Server)   
+    .WithReference(qdrant.Server)
+    .WaitFor(qdrant.Server)   
     .WaitFor(vLLM);
+
+var qdrantEndpoint = qdrant.Server.Resource.PrimaryEndpoint;
 
 var app = builder.Build();
 
@@ -48,7 +51,7 @@ app.Run();
 
     var qdrant = builder
         //TO DO: Validate that we can pass RUN_MODE here
-        .AddQdrant("qdrant", apiKey)                    // uses qdrant/qdrant image
+        .AddQdrant("qdrant", apiKey)
         //.WithLifetime(ContainerLifetime.Persistent)   // Qdrant is slow to warm. Disabled until finished development.
         .WithDataVolume()                               // mounts a Docker volume at /qdrant/storage
         // Optional: override config (e.g., max shards, telemetry, GPU flags)

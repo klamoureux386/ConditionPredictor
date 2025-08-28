@@ -4,6 +4,7 @@ using ConditionPredictor.Web.ProgramExtensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
+using Aspire.Qdrant.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,9 @@ builder.AddServiceDefaults();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// Aspire:Qdrant:Client configuration gets injected as Environment Variables from the AppHost.
+builder.AddQdrantClient("qdrant");
 
 builder.Services.SetupServices();
 

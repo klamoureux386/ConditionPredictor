@@ -6,6 +6,7 @@
 @inject NavigationManager _navigationManager;
 
 @inject CTakesService _ctakesService;
+@inject VectorService _vectorService;
 
 <PageTitle>Home</PageTitle>
 
@@ -33,6 +34,19 @@ Welcome to your new app.
     Test CTAKES
 </button>
 
+<button @onclick="TestQdrant"
+        type="button"
+        class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+    Test Qdrant
+</button>
+
+@if (qdrantCollections != null)
+{
+    <div class="mt-4">
+        @qdrantCollections
+    </div>
+}
+
 @if (annotated != null)
 {
     <div class="mt-4">
@@ -44,6 +58,7 @@ Welcome to your new app.
 
     private CTakesResponse? cTakesResponse { get; set; }
     private MarkupString? annotated { get; set; }
+    private string? qdrantCollections { get; set; }
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -58,6 +73,11 @@ Welcome to your new app.
     private void NavigateToMeSHQuery()
     {
         _navigationManager.NavigateTo("/MeSHTermsQuery");
+    }
+
+    private async Task TestQdrant()
+    {
+        qdrantCollections = await _vectorService.GetCollections();
     }
 
     private async Task TestCTAKES()

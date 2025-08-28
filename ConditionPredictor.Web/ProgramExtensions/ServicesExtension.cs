@@ -11,6 +11,7 @@ namespace ConditionPredictor.Web.ProgramExtensions
             services.AddScoped<CTakesService, CTakesService>();
             services.AddScoped<EvaluatorService, EvaluatorService>();
             services.AddScoped<PubMedService, PubMedService>();
+            services.AddScoped<VectorService, VectorService>();
 
             return services;
         }

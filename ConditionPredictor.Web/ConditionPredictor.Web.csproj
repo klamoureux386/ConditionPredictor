@@ -4,6 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>3d8e27ce-0eed-4f2d-ad31-463df91128ca</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspire.Qdrant.Client" Version="9.4.1" />
     <PackageReference Include="Aspire.StackExchange.Redis.OutputCaching" Version="9.4.0" />
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.61.0" />
   </ItemGroup>
